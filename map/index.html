@@ -308,6 +308,36 @@
       line-height: 1.45;
     }
 
+    .detail-value a { color: #a8f1c7; font-weight: 700; word-break: break-word; }
+
+    .hours-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .hours-list li {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 10px;
+      align-items: baseline;
+    }
+
+    .hours-day {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.74rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .hours-time {
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
     .search-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -760,7 +790,7 @@
       </div>
       <div class="banner-actions">
         <a class="badge" href="../index.html">Home</a>
-        <div class="badge"><strong id="banner-count">0</strong> courts</div>
+        <div class="badge"><strong id="banner-count">0</strong> locations</div>
         <div class="info-wrap">
           <button class="info-button" id="info-toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="info-popover">
             <span class="info-icon" aria-hidden="true">i</span>
@@ -841,7 +871,7 @@
           <div class="list-card" id="list-card">
             <div class="list-header">
               <div class="title">
-                <h3 id="list-title">Courts in view</h3>
+                <h3 id="list-title">Locations in view</h3>
                 <span id="list-summary">0 results</span>
               </div>
               <p>Pan or zoom the map to filter this list to what is currently in view.</p>
@@ -948,6 +978,7 @@
         address: row['Address'] || row['Location'] || '',
         city: row['City'] || '',
         surface: row['Primary Surface'] || row['Surface'] || '',
+        secondarySurface: row['Secondary Surface'] || '',
         lights: row['Lights'] || row['Lights/No Lights'] || '',
         indoorOutdoor: row['Indoor/Outdoor'] || row['Indoor Outdoor'] || '',
         access: row['Public/Private'] || row['Public Access'] || '',
@@ -991,19 +1022,31 @@
       residence: 'Residence / Condo',
     };
 
+    const PUBLIC_HOUR_DAYS = [
+      ['Mon', 'Public Hours Monday'],
+      ['Tue', 'Public Hours Tuesday'],
+      ['Wed', 'Public Hours Wednesday'],
+      ['Thu', 'Public Hours Thursday'],
+      ['Fri', 'Public Hours Friday'],
+      ['Sat', 'Public Hours Saturday'],
+      ['Sun', 'Public Hours Sunday'],
+      ['Holidays', 'Public Hours Holidays'],
+    ];
+
+    function hasAnyPublicHours(raw) {
+      if (!raw) return false;
+      return PUBLIC_HOUR_DAYS.some(([, key]) => {
+        const val = raw[key];
+        return val && String(val).trim();
+      });
+    }
+
     function normalizeAccess(value, rawOrRecord) {
       const v = normalizeValue(value || '');
       let rawStr = '';
       // rawOrRecord may be a raw object (row) or string; prefer object to inspect public hours
       if (rawOrRecord && typeof rawOrRecord === 'object') {
-        const keys = ['Public Hours', 'Public Access', 'Hours', 'Opening Hours', 'Public_Hours'];
-        for (let k of keys) {
-          const val = rawOrRecord[k];
-          if (val && String(val).trim()) {
-            // If there are documented public hours, treat as a public club
-            return 'public_club';
-          }
-        }
+        if (hasAnyPublicHours(rawOrRecord)) return 'public_club';
         rawStr = normalizeValue(JSON.stringify(rawOrRecord));
       } else {
         rawStr = normalizeValue(rawOrRecord || '');
@@ -1013,41 +1056,43 @@
       if (!combined) return 'private';
       if (combined.includes('private') && combined.includes('public')) return 'public_club';
       if (combined.includes('club') && combined.includes('public')) return 'public_club';
+      if (combined.includes('school') || combined.includes('school board') || combined.includes('tdsb') || combined.includes('tcdsb')) return 'school';
       if (combined.includes('public') && combined.includes('reserv')) return 'public';
       if (combined.includes('public')) return 'public';
       if (combined.includes('condo') || combined.includes('condominium') || combined.includes('resid')) return 'residence';
-      if (combined.includes('school') || combined.includes('school board') || combined.includes('tdsb')) return 'school';
       if (combined.includes('commercial') || combined.includes('membership')) return 'commercial';
       if (combined.includes('private')) return 'commercial';
       if (combined.includes('club')) return 'commercial';
       return 'private';
     }
 
-    function findWebsite(item) {
-      if (!item || !item.raw) return '';
-      const candidates = ['Website', 'website', 'URL', 'Url', 'Site', 'Homepage', 'Home Page', 'Link', 'Website URL', 'Site URL'];
-      for (let k of candidates) {
-        const v = item.raw[k];
-        if (v && String(v).trim()) {
-          const s = String(v).trim();
-          if (/^https?:\/\//i.test(s)) return s;
-          if (/\./.test(s) && !/\s/.test(s)) return (s.startsWith('www.') ? 'https://' + s : 'http://' + s);
-        }
-      }
-      // fallback: if source looks like a url
-      const src = item.source || item.raw['Source'] || '';
-      if (src && String(src).trim()) {
-        const s = String(src).trim();
-        if (/^https?:\/\//i.test(s)) return s;
-        if (/\./.test(s) && !/\s/.test(s)) return (s.startsWith('www.') ? 'https://' + s : 'http://' + s);
-      }
+    function normalizeUrl(value) {
+      if (!value) return '';
+      const s = String(value).trim();
+      if (!s) return '';
+      if (/^https?:\/\//i.test(s)) return s;
+      if (/\./.test(s) && !/\s/.test(s)) return (s.startsWith('www.') ? 'https://' + s : 'http://' + s);
       return '';
     }
 
+    function findWebsite(item) {
+      if (!item || !item.raw) return '';
+      const candidates = ['Club Website', 'Website', 'website', 'URL', 'Url', 'Site', 'Homepage', 'Home Page', 'Link', 'Website URL', 'Site URL'];
+      for (let k of candidates) {
+        const url = normalizeUrl(item.raw[k]);
+        if (url) return url;
+      }
+      return normalizeUrl(item.source || item.raw['Source'] || '');
+    }
+
+    function getCityUrl(item) {
+      if (!item || !item.raw) return '';
+      return (item.raw['Public City URL'] || '').trim();
+    }
+
     function isCityProperty(item) {
-      const src = (item.source || item.raw && (item.raw['Source'] || '') || '').toLowerCase();
       const owner = (item.raw && (item.raw['Owner'] || item.raw['Organization'] || '') || '').toLowerCase();
-      return src.includes('city of toronto') || src.includes('toronto') || owner.includes('city of toronto') || owner.includes('city of toronto parks');
+      return owner.includes('city of toronto');
     }
 
     function renderLegend() {
@@ -1267,31 +1312,53 @@
       return items.filter((item) => bounds.contains([item.lat, item.lng]));
     }
 
+    function formatPublicHoursHtml(raw) {
+      if (!raw) return '';
+      const entries = PUBLIC_HOUR_DAYS
+        .map(([label, key]) => [label, String(raw[key] || '').trim()])
+        .filter(([, val]) => val);
+      if (!entries.length) return '';
+      return `<ul class="hours-list">${entries.map(([label, val]) =>
+        `<li><span class="hours-day">${escapeHtml(label)}</span><span class="hours-time">${escapeHtml(val)}</span></li>`
+      ).join('')}</ul>`;
+    }
+
     function detailFields(item) {
+      const accessKey = normalizeAccess(item.access, item.raw && (item.raw['Public/Private'] || item.raw['Public Access'] || item.raw));
+      const clubName = String(item.raw['Tennis Club Name'] || '').trim();
+      const clubWebsite = normalizeUrl(item.raw['Club Website']);
+
       const rows = [
-        ['Region', item.raw['Region']],
-        ['Court type', item.surface],
+        [item.secondarySurface ? 'Primary surface' : 'Court type', item.surface],
+        ['Secondary surface', item.secondarySurface],
         ['Indoor / Outdoor', item.indoorOutdoor],
         ['Lights', item.lights],
         ['Access', item.access],
         ['Number of courts', item.courts],
         ['Pickleball lines', item.pickleball],
-        ['Membership', item.raw['Membership']],
+        ['Owner', item.raw['Owner']],
         ['Operating season', item.raw['Operating Season']],
         ['Winter play', item.raw['Winter Play']],
-        ['Source', item.source],
       ];
 
-      // If this is a public court run by a club, surface any public hours in the details
-      const accessKey = normalizeAccess(item.access, item.raw && (item.raw['Public/Private'] || item.raw['Public Access'] || item.raw));
-      if (accessKey === 'public_club') {
-        const publicHours = item.raw['Public Hours'] || item.raw['Public Access'] || item.raw['Hours'] || item.raw['Opening Hours'];
-        if (publicHours) rows.splice(5, 0, ['Public hours', publicHours]);
+      if (clubName) {
+        rows.push(['Tennis club', clubName]);
+        if (item.raw['Membership']) rows.push(['Membership', item.raw['Membership']]);
+        if (clubWebsite) rows.push(['Club website', clubWebsite, 'link']);
+      } else if (item.raw['Membership']) {
+        rows.push(['Membership', item.raw['Membership']]);
       }
 
-      // Attach website if available
-      const website = findWebsite(item);
-      if (website) rows.push(['Website', website]);
+      if (accessKey === 'public_club') {
+        const hoursHtml = formatPublicHoursHtml(item.raw);
+        if (hoursHtml) rows.push(['Public hours', hoursHtml, 'html']);
+        if (item.raw['Public Hours Verified']) {
+          rows.push(['Hours verified for', item.raw['Public Hours Verified']]);
+        }
+      }
+
+      if (item.raw['Phone']) rows.push(['Phone', item.raw['Phone']]);
+      if (item.raw['Notes']) rows.push(['Notes', item.raw['Notes']]);
 
       return rows.filter(([, value]) => value);
     }
@@ -1299,25 +1366,33 @@
     function renderDetailPanel(item) {
       controls.detailName.textContent = item.name;
       controls.detailAddress.textContent = item.address || item.city || 'Address unavailable';
-      // Build links (maps, street view, website, city link when applicable)
       const linksContainer = controls.detailCard.querySelector('.detail-links');
-      const website = findWebsite(item);
-      const cityHref = isCityProperty(item) ? (website || (item.source && (/^https?:\/\//i.test(item.source) ? item.source : (`https://${item.source}`))) || 'https://www.toronto.ca') : '';
+      const clubWebsite = normalizeUrl(item.raw['Club Website']);
+      const cityUrl = isCityProperty(item) ? getCityUrl(item) : '';
+
       let linksHtml = '';
       linksHtml += `<a class="detail-link" href="${googleMapsLink(item)}" target="_blank" rel="noreferrer">Open in Google Maps</a>`;
       linksHtml += `<a class="detail-link" href="${streetViewLink(item)}" target="_blank" rel="noreferrer">Street View</a>`;
-      if (website) linksHtml += `<a class="detail-link" href="${website}" target="_blank" rel="noreferrer">Website</a>`;
-      if (cityHref) linksHtml += `<a class="detail-link" href="${cityHref}" target="_blank" rel="noreferrer">City of Toronto</a>`;
+      if (clubWebsite) linksHtml += `<a class="detail-link" href="${escapeHtml(clubWebsite)}" target="_blank" rel="noreferrer">Club Website</a>`;
+      if (cityUrl) linksHtml += `<a class="detail-link" href="${escapeHtml(cityUrl)}" target="_blank" rel="noreferrer">City of Toronto</a>`;
       linksContainer.innerHTML = linksHtml;
 
       controls.detailGrid.innerHTML = detailFields(item)
-        .map(([label, value]) => {
-          if (label === 'Website' && value) {
-            const href = escapeHtml(value);
+        .map((row) => {
+          const [label, value, type] = row;
+          if (type === 'link') {
+            const href = escapeHtml(normalizeUrl(value) || value);
             return `
           <div class="detail-row">
             <div class="detail-label">${escapeHtml(label)}</div>
-            <div class="detail-value"><a href="${href}" target="_blank" rel="noreferrer">${href}</a></div>
+            <div class="detail-value"><a href="${href}" target="_blank" rel="noreferrer">${escapeHtml(value)}</a></div>
+          </div>`;
+          }
+          if (type === 'html') {
+            return `
+          <div class="detail-row">
+            <div class="detail-label">${escapeHtml(label)}</div>
+            <div class="detail-value">${value}</div>
           </div>`;
           }
           return `
@@ -1415,8 +1490,8 @@
       const count = items.length;
       controls.bannerCount.textContent = count;
       controls.countChip.textContent = `${count} shown`;
-      controls.filterCount.textContent = filtered ? `${count} courts shown` : `${count} total courts`;
-      controls.listSummary.textContent = filtered ? `${count} results` : `${count} courts`;
+      controls.filterCount.textContent = filtered ? `${count} locations shown` : `${count} total locations`;
+      controls.listSummary.textContent = filtered ? `${count} results` : `${count} locations`;
     }
 
     function makeChip(label) {
@@ -1448,7 +1523,8 @@
         const chips = document.createElement('div');
         chips.className = 'chips';
         if (item.surface) chips.appendChild(makeChip(item.surface));
-        if (item.courts) chips.appendChild(makeChip(`${item.courts} ct`));
+        if (item.secondarySurface) chips.appendChild(makeChip(item.secondarySurface));
+        if (item.courts) chips.appendChild(makeChip(`${item.courts} courts`));
         if (item.lights) chips.appendChild(makeChip(item.lights));
         if (item.access) chips.appendChild(makeChip(item.access));
         if (item.indoorOutdoor) chips.appendChild(makeChip(item.indoorOutdoor));
