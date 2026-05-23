@@ -573,6 +573,28 @@
       font-family: 'Roboto', system-ui, sans-serif;
     }
 
+    .selected-court-badge {
+      background: transparent !important;
+      border: 0 !important;
+      pointer-events: none;
+    }
+
+    .selected-court-emoji {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+      text-align: center;
+      filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55));
+      transform-origin: 50% 100%;
+      animation: court-pin-drop 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes court-pin-drop {
+      0%   { transform: translateY(-18px) scale(0.5); opacity: 0; }
+      60%  { transform: translateY(3px) scale(1.08); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
     .map-controls {
       position: absolute;
       top: 16px;
@@ -1007,10 +1029,9 @@
     const ACCESS_COLOR_MAP = {
       public: '#2f8e61',
       public_club: '#6ce4a1',
-      private: '#d66a6a',
-      commercial: '#b33a3a',
+      private: '#7a1a1a',
+      commercial: '#f292a8',
       school: '#f3b66a',
-      residence: '#6ea8ff',
     };
 
     const ACCESS_DISPLAY_NAME = {
@@ -1019,7 +1040,6 @@
       private: 'Private',
       commercial: 'Commercial',
       school: 'School',
-      residence: 'Residence / Condo',
     };
 
     const PUBLIC_HOUR_DAYS = [
@@ -1054,15 +1074,17 @@
 
       const combined = (v + ' ' + rawStr).trim();
       if (!combined) return 'private';
+      // Clubs with public hours come first so "private with some public hours" wins over plain "private".
       if (combined.includes('private') && combined.includes('public')) return 'public_club';
       if (combined.includes('club') && combined.includes('public')) return 'public_club';
-      if (combined.includes('school') || combined.includes('school board') || combined.includes('tdsb') || combined.includes('tcdsb')) return 'school';
-      if (combined.includes('public') && combined.includes('reserv')) return 'public';
+      // Public school courts (TDSB/TCDSB) — but not private independent schools.
+      if (!combined.includes('private') && (combined.includes('school') || combined.includes('tdsb') || combined.includes('tcdsb'))) return 'school';
+      // Plain public courts (including reservable).
       if (combined.includes('public')) return 'public';
-      if (combined.includes('condo') || combined.includes('condominium') || combined.includes('resid')) return 'residence';
+      // Commercial facilities (membership-based pay-to-play, indoor commercial).
       if (combined.includes('commercial') || combined.includes('membership')) return 'commercial';
-      if (combined.includes('private')) return 'commercial';
-      if (combined.includes('club')) return 'commercial';
+      // Everything else (Private, Elite Sports Club, Condo Complex, Luxury Residences,
+      // Private Independent School, etc.) is private.
       return 'private';
     }
 
@@ -1099,7 +1121,7 @@
       const container = document.getElementById('legend');
       if (!container) return;
       container.innerHTML = '';
-      const ordered = ['public', 'public_club', 'commercial', 'school', 'residence', 'private'];
+      const ordered = ['public', 'public_club', 'commercial', 'school', 'private'];
       ordered.forEach((key) => {
         if (!(key in ACCESS_COLOR_MAP)) return;
         const item = document.createElement('div');
@@ -1284,9 +1306,18 @@
       roadLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
       });
-      satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      const satelliteImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Imagery &copy; Esri',
       });
+      const satelliteTransportation = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '',
+        pane: 'overlayPane',
+      });
+      const satelliteLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '',
+        pane: 'overlayPane',
+      });
+      satelliteLayer = L.layerGroup([satelliteImagery, satelliteTransportation, satelliteLabels]);
       satelliteLayer.addTo(map);
     }
 
@@ -1442,12 +1473,11 @@
         const accessKey = normalizeAccess(item.access, item.raw && (item.raw['Public/Private'] || item.raw['Public Access'] || ''));
         const baseColor = ACCESS_COLOR_MAP[accessKey] || ACCESS_COLOR_MAP.private;
         const isSelected = currentSelection && currentSelection.id === item.id;
-        const markerColor = isSelected ? '#ffffff' : baseColor;
         const marker = L.circleMarker([item.lat, item.lng], {
           radius: isSelected ? 9 : 7,
           color: '#f5fff8',
           weight: isSelected ? 3 : 2,
-          fillColor: markerColor,
+          fillColor: baseColor,
           fillOpacity: isSelected ? 1 : 0.92,
           opacity: 0.95,
         }).addTo(map);
@@ -1455,6 +1485,22 @@
           setSelection(item, true);
         });
         markers.push(marker);
+
+        if (isSelected) {
+          const badge = L.marker([item.lat, item.lng], {
+            icon: L.divIcon({
+              className: 'selected-court-badge',
+              html: '<span class="selected-court-emoji" role="img" aria-label="Selected court">🎾</span>',
+              iconSize: [34, 34],
+              iconAnchor: [17, 40],
+            }),
+            interactive: false,
+            keyboard: false,
+            zIndexOffset: 1000,
+          }).addTo(map);
+          markers.push(badge);
+        }
+
         points.push([item.lat, item.lng]);
       });
       if (fitToBounds && points.length) {
