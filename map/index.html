@@ -51,7 +51,8 @@
       padding: 14px 18px;
       background: rgba(0, 0, 0, 0.88);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      z-index: 4;
+      position: relative;
+      z-index: 1000;
     }
 
     .brand-block {
@@ -101,6 +102,87 @@
     }
 
     .badge strong { font-weight: 700; }
+
+    .info-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .info-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .info-button:hover { background: rgba(255, 255, 255, 0.06); }
+
+    .info-button .info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #08110c;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 900;
+      font-style: italic;
+    }
+
+    .info-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(360px, 90vw);
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(13, 16, 13, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font-size: 0.88rem;
+      line-height: 1.55;
+      z-index: 1000;
+    }
+
+    .info-popover[hidden] { display: none; }
+
+    .info-popover h3 {
+      margin: 0 0 8px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+    }
+
+    .info-popover p {
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+
+    .info-popover p:last-child { margin-bottom: 0; }
+
+    .info-popover a {
+      color: #a8f1c7;
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      word-break: break-word;
+    }
 
     .main-grid {
       min-height: 0;
@@ -677,8 +759,19 @@
         <div class="subtitle">Explore all tennis courts within the City of Toronto</div>
       </div>
       <div class="banner-actions">
-        <a class="badge" href="index.html">Home</a>
+        <a class="badge" href="../index.html">Home</a>
         <div class="badge"><strong id="banner-count">0</strong> courts</div>
+        <div class="info-wrap">
+          <button class="info-button" id="info-toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="info-popover">
+            <span class="info-icon" aria-hidden="true">i</span>
+            <span>Info</span>
+          </button>
+          <div class="info-popover" id="info-popover" role="dialog" aria-label="About this data" hidden>
+            <h3>About this data</h3>
+            <p>Information on this site may not be accurate or up to date. Please verify hours, fees, and access details with official City of Toronto or club websites before heading out.</p>
+            <p>Report errors or omissions at <a href="https://github.com/vzcodes/toronto-tennis/issues" target="_blank" rel="noreferrer">github.com/vzcodes/toronto-tennis/issues</a>.</p>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -1088,8 +1181,8 @@
     }
 
     async function loadData() {
-      const resp = await fetch('./new_courts.csv', { cache: 'no-store' });
-      if (!resp.ok) throw new Error('Could not load new_courts.csv');
+      const resp = await fetch('./courts.csv', { cache: 'no-store' });
+      if (!resp.ok) throw new Error('Could not load map/courts.csv');
       const text = await resp.text();
       const rows = rowsToObjects(text);
       return rows.map((row, idx) => normalizeRecord(row, idx)).filter((row) => row.lat && row.lng);
@@ -1533,6 +1626,31 @@
         document.getElementById('list').innerHTML = '<div class="empty-state" style="color:#ff8b8b">Error loading data: ' + err.message + '</div>';
         console.error(err);
       }
+    })();
+
+    (function setupInfoPopover() {
+      const toggle = document.getElementById('info-toggle');
+      const popover = document.getElementById('info-popover');
+      if (!toggle || !popover) return;
+      const close = () => {
+        popover.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+      };
+      const open = () => {
+        popover.hidden = false;
+        toggle.setAttribute('aria-expanded', 'true');
+      };
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        popover.hidden ? open() : close();
+      });
+      document.addEventListener('click', (event) => {
+        if (popover.hidden) return;
+        if (!popover.contains(event.target) && !toggle.contains(event.target)) close();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !popover.hidden) close();
+      });
     })();
   </script>
 </body>

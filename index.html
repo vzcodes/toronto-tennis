@@ -29,22 +29,90 @@
     .note { padding: 18px; border-radius: 18px; background: rgba(255,255,255,0.7); border: 1px solid var(--border); }
     .note h2 { margin: 0 0 10px; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
     .note ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+    .info-wrap { position: fixed; top: 18px; right: 18px; z-index: 100; }
+    .info-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(37, 28, 13, 0.08);
+    }
+    .info-button:hover { background: white; }
+    .info-button .info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 0.78rem;
+      font-weight: 900;
+      font-style: italic;
+    }
+    .info-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(360px, 92vw);
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 40px rgba(37, 28, 13, 0.18);
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .info-popover[hidden] { display: none; }
+    .info-popover h3 {
+      margin: 0 0 8px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      font-family: Georgia, serif;
+    }
+    .info-popover p { margin: 0 0 10px; color: var(--muted); max-width: none; font-size: 0.95rem; }
+    .info-popover p:last-child { margin-bottom: 0; }
+    .info-popover a { word-break: break-word; }
     @media (max-width: 760px) {
       .wrap { padding: 18px; }
       .card { padding: 22px; }
       .grid { grid-template-columns: 1fr; }
+      .info-wrap { top: 12px; right: 12px; }
     }
   </style>
 </head>
 <body>
+  <div class="info-wrap">
+    <button class="info-button" id="info-toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="info-popover">
+      <span class="info-icon" aria-hidden="true">i</span>
+      <span>Info</span>
+    </button>
+    <div class="info-popover" id="info-popover" role="dialog" aria-label="About this data" hidden>
+      <h3>About this data</h3>
+      <p>Information on this site may not be accurate or up to date. Please verify hours, fees, and access details with official City of Toronto or club websites before heading out.</p>
+      <p>Report errors or omissions at <a href="https://github.com/vzcodes/toronto-tennis/issues" target="_blank" rel="noreferrer">github.com/vzcodes/toronto-tennis/issues</a>.</p>
+    </div>
+  </div>
   <main class="wrap">
     <section class="card">
       <div class="brand">Toronto tennis finder</div>
       <h1>Find a court before the lineup finds you.</h1>
       <p>The interactive map loads all courts statically with a satellite/road toggle. Filters allow you to select your surface, the time you want to play, allowing you to plan for your next tennis hit.</p>
       <div class="actions">
-        <a class="button primary" href="map.html">Open the map</a>
-        <a class="button" href="readme.md">Read the project notes</a>
+        <a class="button primary" href="map">Open the map</a>
+        <a class="button" href="https://github.com/vzcodes/toronto-tennis">Read the project notes</a>
       </div>
       <div class="grid">
         <!-- <div class="note">
@@ -108,7 +176,7 @@
 
     (async function loadStats(){
       try {
-        const resp = await fetch('./new_courts.csv', {cache: 'no-store'});
+        const resp = await fetch('./map/courts.csv', {cache: 'no-store'});
         if (!resp.ok) throw new Error('Could not load dataset');
         const text = await resp.text();
         const rows = parseCSV(text);
@@ -159,6 +227,25 @@
     })();
 
     function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    (function setupInfoPopover(){
+      const toggle = document.getElementById('info-toggle');
+      const popover = document.getElementById('info-popover');
+      if (!toggle || !popover) return;
+      const close = () => { popover.hidden = true; toggle.setAttribute('aria-expanded', 'false'); };
+      const open = () => { popover.hidden = false; toggle.setAttribute('aria-expanded', 'true'); };
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        popover.hidden ? open() : close();
+      });
+      document.addEventListener('click', (event) => {
+        if (popover.hidden) return;
+        if (!popover.contains(event.target) && !toggle.contains(event.target)) close();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !popover.hidden) close();
+      });
+    })();
   </script>
 </body>
 </html>
