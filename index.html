@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toronto Tennis Finder</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f1e8;
+      --panel: #fffaf2;
+      --text: #1d1d1b;
+      --muted: #5f5a52;
+      --accent: #0b6b53;
+      --border: #e4d8c8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; font-family: Georgia, 'Times New Roman', serif; color: var(--text); background: radial-gradient(circle at top, #fffdf8 0%, var(--bg) 45%, #eadfcf 100%); }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px; }
+    .card { background: rgba(255, 250, 242, 0.92); border: 1px solid var(--border); border-radius: 24px; padding: 28px; box-shadow: 0 16px 50px rgba(37, 28, 13, 0.08); }
+    .brand { text-transform: uppercase; letter-spacing: 0.18em; font-size: 12px; color: var(--accent); font-weight: 700; }
+    h1 { font-size: clamp(2.6rem, 6vw, 5rem); line-height: 0.95; margin: 14px 0 18px; max-width: 12ch; }
+    p { font-size: 1.05rem; line-height: 1.65; color: var(--muted); margin: 0 0 16px; max-width: 62ch; }
+    a { color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 999px; text-decoration: none; border: 1px solid var(--border); background: white; color: var(--text); font-weight: 700; }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 18px; margin-top: 22px; }
+    .note { padding: 18px; border-radius: 18px; background: rgba(255,255,255,0.7); border: 1px solid var(--border); }
+    .note h2 { margin: 0 0 10px; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+    .note ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+    @media (max-width: 760px) {
+      .wrap { padding: 18px; }
+      .card { padding: 22px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="brand">Toronto tennis finder</div>
+      <h1>Find a court before the lineup finds you.</h1>
+      <p>The interactive map loads all courts statically with a satellite/road toggle. Filters allow you to select your surface, the time you want to play, allowing you to plan for your next tennis hit.</p>
+      <div class="actions">
+        <a class="button primary" href="map.html">Open the map</a>
+        <a class="button" href="readme.md">Read the project notes</a>
+      </div>
+      <div class="grid">
+        <!-- <div class="note">
+          <h2>What you'll get</h2>
+          <ul>
+            <li>Single CSV dataset for the full court list.</li>
+            <li>Left-side list of courts for quick browsing.</li>
+            <li>Satellite map by default, with road-map and Street View shortcuts.</li>
+          </ul>
+        </div> -->
+        <div class="note" id="motivation">
+          <h2>About the project</h2>
+          <p>This site aggregates Toronto tennis court data into a single, shareable map so players can find courts with ease, and see when public hours are available without hunting through dozens of pages. It focuses on: ease of discovery, transparency about access, and quick links to City resources and club websites. It also allows you to learn more about new clubs to play at and sharable links allow for sharing courts with others.</p>
+        </div>
+        <div class="note" id="stats">
+          <h2>Statistics</h2>
+          <div id="stats-content">Loading statistics…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    // Lightweight CSV parser (same behavior as map page parser for compatibility)
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let inQuotes = false;
+
+      function pushCell() { row.push(cell); cell = ''; }
+      function pushRow() { if (row.length) rows.push(row); row = []; }
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i+1];
+        if (char === '"') {
+          if (inQuotes && next === '"') { cell += '"'; i++; } else { inQuotes = !inQuotes; }
+          continue;
+        }
+        if (!inQuotes && char === ',') { pushCell(); continue; }
+        if (!inQuotes && (char === '\n' || char === '\r')) {
+          if (char === '\r' && next === '\n') { i++; }
+          pushCell(); pushRow(); continue;
+        }
+        cell += char;
+      }
+      if (cell.length || row.length) { pushCell(); pushRow(); }
+      if (!rows.length) return [];
+      const headers = rows.shift().map(h => h.trim());
+      return rows.filter(r => r.some(c => c.trim() !== '')).map((values) => {
+        const obj = {};
+        for (let i = 0; i < headers.length; i++) obj[headers[i]] = (values[i] ?? '').trim();
+        return obj;
+      });
+    }
+
+    function sumNumber(value) {
+      const n = parseInt(String(value || '').replace(/[^0-9]/g, ''), 10);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    (async function loadStats(){
+      try {
+        const resp = await fetch('./new_courts.csv', {cache: 'no-store'});
+        if (!resp.ok) throw new Error('Could not load dataset');
+        const text = await resp.text();
+        const rows = parseCSV(text);
+
+        const totalLocations = rows.length;
+        const totalCourts = rows.reduce((acc, r) => acc + sumNumber(r['Number of Courts'] || r['Number of Courts'] ), 0);
+
+        // Courts by City (sum courts)
+        const courtsByCity = {};
+        rows.forEach(r => {
+          const city = (r['City'] || r['City/Town'] || 'Unknown').trim() || 'Unknown';
+          courtsByCity[city] = (courtsByCity[city] || 0) + sumNumber(r['Number of Courts']);
+        });
+
+        // Courts by surface
+        const courtsBySurface = {};
+        rows.forEach(r => {
+          const s = (r['Primary Surface'] || r['Primary surface'] || r['Surface'] || 'Unknown').trim() || 'Unknown';
+          courtsBySurface[s] = (courtsBySurface[s] || 0) + sumNumber(r['Number of Courts']);
+        });
+
+        // City of Toronto courts (owner contains City of Toronto)
+        const cityOwned = rows.reduce((acc, r) => {
+          const owner = (r['Owner'] || r['Owner/Operator'] || '').toLowerCase();
+          if (owner.includes('city of toronto') || owner.includes('city') || (r['Public/Private'] || '').toLowerCase().includes('public')) {
+            return acc + sumNumber(r['Number of Courts']);
+          }
+          return acc;
+        }, 0);
+
+        // Build HTML
+        const el = document.getElementById('stats-content');
+        const topCities = Object.entries(courtsByCity).sort((a,b)=>b[1]-a[1]).slice(0,8);
+        const surfaces = Object.entries(courtsBySurface).sort((a,b)=>b[1]-a[1]);
+
+        el.innerHTML = `
+          <p><strong>${totalLocations.toLocaleString()}</strong> locations, <strong>${totalCourts.toLocaleString()}</strong> courts total.</p>
+          <p><strong>${cityOwned.toLocaleString()}</strong> courts listed as public.</p>
+          <h3 style="margin-top:12px;">Top neighbourhoods</h3>
+          <h4 style="margin-top:12px;">By surface</h4>
+          <ul>${topCities.map(([c,n])=>`<li>${escapeHtml(c)}: ${n}</li>`).join('')}</ul>
+          <h4 style="margin-top:12px;">By surface</h4>
+          <ul>${surfaces.map(([s,n])=>`<li>${escapeHtml(s)}: ${n}</li>`).join('')}</ul>
+        `;
+      } catch (err) {
+        document.getElementById('stats-content').textContent = 'Error loading stats: ' + err.message;
+      }
+    })();
+
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  </script>
+</body>
+</html>
