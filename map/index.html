@@ -208,6 +208,7 @@
     .search-card,
     .stats-card,
     .filters-card,
+    .plan-card,
     .list-card,
     .detail-card {
       border: 1px solid var(--stroke);
@@ -220,8 +221,98 @@
     .search-card { padding: 12px; }
     .stats-card { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .filters-card { padding: 14px 16px; }
+    .plan-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
     .list-card { overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
     .detail-card { display: flex; flex-direction: column; gap: 14px; padding: 16px; }
+
+    .plan-card.active {
+      border-color: rgba(84, 192, 138, 0.45);
+      background: linear-gradient(180deg, rgba(84, 192, 138, 0.08), rgba(255, 255, 255, 0.03));
+    }
+
+    .plan-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .plan-toggle input { accent-color: var(--accent); margin: 0; }
+    .plan-card.active .plan-toggle { color: var(--accent); border-color: rgba(84, 192, 138, 0.5); background: rgba(84, 192, 138, 0.14); }
+
+    .plan-help { margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .plan-grid label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .plan-grid input {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 11px 12px;
+      outline: none;
+      font: inherit;
+      color-scheme: dark;
+    }
+
+    .plan-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .plan-now { padding: 8px 14px; font-size: 0.82rem; }
+
+    .plan-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      cursor: pointer;
+    }
+
+    .plan-check input { accent-color: var(--accent); margin: 0; }
+
+    .plan-summary {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .plan-card.active .plan-summary {
+      background: rgba(84, 192, 138, 0.1);
+      border-color: rgba(84, 192, 138, 0.32);
+      color: #d4f5e2;
+    }
 
     .detail-header {
       display: flex;
@@ -874,6 +965,35 @@
             <div id="legend" class="legend" aria-label="Access legend"></div>
           </div>
 
+          <div class="plan-card">
+            <div class="section-title">
+              <h2>Plan a Hit</h2>
+              <label class="plan-toggle">
+                <input type="checkbox" id="plan-enabled" />
+                <span>Active</span>
+              </label>
+            </div>
+            <p class="plan-help">Show public courts &amp; clubs open at a chosen day &amp; time.</p>
+            <div class="plan-grid">
+              <label>
+                Date
+                <input type="date" id="plan-date" />
+              </label>
+              <label>
+                Time
+                <input type="time" id="plan-time" />
+              </label>
+            </div>
+            <div class="plan-actions">
+              <button class="ghost-button plan-now" id="plan-now" type="button">Use now</button>
+              <label class="plan-check">
+                <input type="checkbox" id="plan-holiday" />
+                <span>Treat as a holiday</span>
+              </label>
+            </div>
+            <div class="plan-summary" id="plan-summary"></div>
+          </div>
+
           <div class="detail-card" id="detail-card" hidden>
             <div class="detail-header">
               <div>
@@ -1059,6 +1179,100 @@
         const val = raw[key];
         return val && String(val).trim();
       });
+    }
+
+    // Map JavaScript Date.getDay() (0=Sun..6=Sat) to the CSV column for that day.
+    const DAY_INDEX_TO_CSV_KEY = [
+      'Public Hours Sunday',
+      'Public Hours Monday',
+      'Public Hours Tuesday',
+      'Public Hours Wednesday',
+      'Public Hours Thursday',
+      'Public Hours Friday',
+      'Public Hours Saturday',
+    ];
+
+    function clockToMinutes(hour, minute, ampm) {
+      let h = hour % 12;
+      if (ampm && ampm.includes('p')) h += 12;
+      return h * 60 + (minute || 0);
+    }
+
+    // Parse strings like "4 p.m. - 6 p.m.", "4:30 p.m. - 10:30 p.m.",
+    // "5 p.m. to 11 p.m.", "5 p.m. - 7 p.m.; 8 p.m. - 10 p.m." into
+    // a list of { startMin, endMin } in minutes since midnight.
+    function parseTimeRanges(value) {
+      if (!value) return [];
+      const cleaned = String(value).toLowerCase().replace(/\s+/g, ' ').trim();
+      if (!cleaned) return [];
+      const re = /(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?\s*(?:-|–|to)\s*(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)/g;
+      const ranges = [];
+      let match;
+      while ((match = re.exec(cleaned)) !== null) {
+        const [, h1, m1, ap1Raw, h2, m2, ap2] = match;
+        const ap1 = ap1Raw || ap2;
+        if (!ap1 || !ap2) continue;
+        const startMin = clockToMinutes(parseInt(h1, 10), parseInt(m1 || '0', 10), ap1);
+        const endMin = clockToMinutes(parseInt(h2, 10), parseInt(m2 || '0', 10), ap2);
+        if (Number.isFinite(startMin) && Number.isFinite(endMin) && endMin > startMin) {
+          ranges.push({ startMin, endMin });
+        }
+      }
+      return ranges;
+    }
+
+    function minutesInRanges(minutes, ranges) {
+      return ranges.some((r) => minutes >= r.startMin && minutes < r.endMin);
+    }
+
+    function pad2(n) { return String(n).padStart(2, '0'); }
+
+    function formatDateInputValue(d) {
+      return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    }
+
+    function formatTimeInputValue(d) {
+      return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    }
+
+    function setPlanInputsToNow() {
+      if (!controls.planDate || !controls.planTime) return;
+      const now = new Date();
+      if (!controls.planDate.value) controls.planDate.value = formatDateInputValue(now);
+      if (!controls.planTime.value) controls.planTime.value = formatTimeInputValue(now);
+    }
+
+    function updatePlanSummary() {
+      if (!controls.planSummary || !controls.planCard) return;
+      const plan = getPlanState();
+      controls.planCard.classList.toggle('active', !!plan.enabled);
+      if (!plan.dateStr || !plan.timeStr) {
+        controls.planSummary.textContent = 'Pick a date and time to plan a play.';
+        return;
+      }
+      const d = new Date(`${plan.dateStr}T${plan.timeStr}`);
+      if (Number.isNaN(d.getTime())) {
+        controls.planSummary.textContent = 'Pick a date and time to plan a play.';
+        return;
+      }
+      const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
+      const timeFmt = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      const holidayBadge = plan.holiday ? ' · using holiday hours' : '';
+      const status = plan.enabled ? 'Filtering to public courts open' : 'Showing all courts';
+      controls.planSummary.textContent = `${status} ${plan.enabled ? 'on ' : '· '}${dayName} at ${timeFmt}${holidayBadge}.`;
+    }
+
+    function isCourtOpenAt(item, dayIndex, minutes, isHoliday) {
+      const accessKey = normalizeAccess(item.access, item.raw && (item.raw['Public/Private'] || item.raw['Public Access'] || item.raw));
+      // Plain public courts and school courts are assumed always accessible.
+      if (accessKey === 'public' || accessKey === 'school') return true;
+      if (accessKey === 'public_club') {
+        const key = isHoliday ? 'Public Hours Holidays' : DAY_INDEX_TO_CSV_KEY[dayIndex];
+        const hoursStr = item.raw && item.raw[key];
+        return minutesInRanges(minutes, parseTimeRanges(hoursStr));
+      }
+      // Private and commercial are excluded from the planning filter.
+      return false;
     }
 
     function normalizeAccess(value, rawOrRecord) {
@@ -1294,6 +1508,13 @@
       streetView: null,
       mapTypeMap: null,
       mapTypeSatellite: null,
+      planCard: null,
+      planEnabled: null,
+      planDate: null,
+      planTime: null,
+      planHoliday: null,
+      planSummary: null,
+      planNow: null,
     };
 
     function initMap() {
@@ -1601,12 +1822,36 @@
       });
     }
 
+    function getPlanState() {
+      const enabled = !!(controls.planEnabled && controls.planEnabled.checked);
+      const dateStr = controls.planDate ? controls.planDate.value : '';
+      const timeStr = controls.planTime ? controls.planTime.value : '';
+      const holiday = !!(controls.planHoliday && controls.planHoliday.checked);
+      if (!enabled || !dateStr || !timeStr) {
+        return { enabled, dateStr, timeStr, holiday, dayIndex: -1, minutes: -1 };
+      }
+      const d = new Date(`${dateStr}T${timeStr}`);
+      if (Number.isNaN(d.getTime())) {
+        return { enabled, dateStr, timeStr, holiday, dayIndex: -1, minutes: -1 };
+      }
+      return {
+        enabled,
+        dateStr,
+        timeStr,
+        holiday,
+        dayIndex: d.getDay(),
+        minutes: d.getHours() * 60 + d.getMinutes(),
+      };
+    }
+
     function applyFilter(items) {
       const q = controls.search.value.trim().toLowerCase();
       const surface = controls.surface.value;
       const lights = controls.lights.value;
       const indoor = controls.indoor.value;
       const access = controls.access.value;
+      const plan = getPlanState();
+      const planActive = plan.enabled && plan.dayIndex >= 0;
 
       return items.filter((item) => {
         const matchesQuery = !q || [item.name, item.address, item.city].some((field) => (field || '').toLowerCase().includes(q));
@@ -1614,7 +1859,9 @@
         const matchesLights = !lights || item.lights === lights;
         const matchesIndoor = !indoor || item.indoorOutdoor === indoor;
         const matchesAccess = !access || item.access === access;
-        return matchesQuery && matchesSurface && matchesLights && matchesIndoor && matchesAccess;
+        if (!(matchesQuery && matchesSurface && matchesLights && matchesIndoor && matchesAccess)) return false;
+        if (planActive && !isCourtOpenAt(item, plan.dayIndex, plan.minutes, plan.holiday)) return false;
+        return true;
       });
     }
 
@@ -1691,6 +1938,16 @@
         controls.detailStreetView = document.getElementById('detail-street-view');
         controls.detailClose = document.getElementById('detail-close');
         controls.sidebar = document.querySelector('.sidebar');
+        controls.planCard = document.querySelector('.plan-card');
+        controls.planEnabled = document.getElementById('plan-enabled');
+        controls.planDate = document.getElementById('plan-date');
+        controls.planTime = document.getElementById('plan-time');
+        controls.planHoliday = document.getElementById('plan-holiday');
+        controls.planSummary = document.getElementById('plan-summary');
+        controls.planNow = document.getElementById('plan-now');
+
+        setPlanInputsToNow();
+        updatePlanSummary();
 
         data = await loadData();
         const uniqueValues = (field) => [...new Set(data.map((item) => item[field]).filter(Boolean))].sort((left, right) => left.localeCompare(right));
@@ -1716,12 +1973,29 @@
         controls.mapTypeMap.addEventListener('click', () => setMapType('road'));
         controls.mapTypeSatellite.addEventListener('click', () => setMapType('satellite'));
 
+        const onPlanChange = () => {
+          updatePlanSummary();
+          refreshView();
+        };
+        controls.planEnabled.addEventListener('change', onPlanChange);
+        controls.planDate.addEventListener('change', onPlanChange);
+        controls.planTime.addEventListener('change', onPlanChange);
+        controls.planHoliday.addEventListener('change', onPlanChange);
+        controls.planNow.addEventListener('click', () => {
+          setPlanInputsToNow();
+          onPlanChange();
+        });
+
         document.getElementById('reset-filters').addEventListener('click', () => {
           controls.search.value = '';
           controls.surface.value = '';
           controls.lights.value = '';
           controls.indoor.value = '';
           controls.access.value = '';
+          controls.planEnabled.checked = false;
+          controls.planHoliday.checked = false;
+          setPlanInputsToNow();
+          updatePlanSummary();
           refreshView();
         });
 
