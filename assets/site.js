@@ -1,4 +1,21 @@
 (function () {
+  // Capture this script's URL while it is executing so we can resolve sibling
+  // assets (like `map/courts.csv`) reliably no matter how deep the current
+  // page is, and regardless of whether the site is served from the domain
+  // root locally or from a project subpath on GitHub Pages
+  // (e.g. `/toronto-tennis/...`).
+  const SCRIPT_URL = (function () {
+    if (document.currentScript && document.currentScript.src) {
+      return document.currentScript.src;
+    }
+    const scripts = document.getElementsByTagName('script');
+    for (let i = scripts.length - 1; i >= 0; i--) {
+      const s = scripts[i];
+      if (s.src && /\/assets\/site\.js(\?|#|$)/.test(s.src)) return s.src;
+    }
+    return null;
+  })();
+
   function parseCSV(text) {
     const rows = [];
     let row = [];
@@ -54,14 +71,16 @@
   function findCsvUrl() {
     const explicit = document.documentElement.getAttribute('data-csv-url');
     if (explicit) return explicit;
-    // Pages live at `/`, `/access-types/`, etc. The CSV lives at `/map/courts.csv`.
-    // Detect depth by counting non-empty path segments excluding any filename.
-    const parts = window.location.pathname.split('/').filter(Boolean);
-    let lastIsFile = false;
-    if (parts.length && parts[parts.length - 1].includes('.')) {
-      parts.pop();
-      lastIsFile = true;
+    // `site.js` always lives at `<site-root>/assets/site.js`, so resolving
+    // `../map/courts.csv` against it gives us `<site-root>/map/courts.csv`.
+    // This works both locally (served from `/`) and on GitHub Pages
+    // (served from `/toronto-tennis/`).
+    if (SCRIPT_URL) {
+      return new URL('../map/courts.csv', SCRIPT_URL).toString();
     }
+    // Fallback: best-effort relative path from the current page.
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    if (parts.length && parts[parts.length - 1].includes('.')) parts.pop();
     const depth = parts.length;
     const prefix = depth === 0 ? '' : '../'.repeat(depth);
     return `${prefix}map/courts.csv`;
