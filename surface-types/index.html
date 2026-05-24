@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surface Types — Toronto Tennis Society</title>
+  <meta name="description" content="A guide to the court surfaces you'll find in Toronto: hardcourt-acrylic, hardcourt-asphalt, green clay, red clay, grass, and artificial grass." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <style>
+    .surface-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .surface-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 14px 36px rgba(37, 28, 13, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    .surface-preview {
+      height: 110px;
+      position: relative;
+      background: var(--surface-bg, #888);
+    }
+    .surface-preview::before {
+      content: "";
+      position: absolute;
+      inset: 18% 16%;
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      border-radius: 2px;
+    }
+    .surface-preview::after {
+      content: "";
+      position: absolute;
+      left: 16%;
+      right: 16%;
+      top: 50%;
+      height: 1.5px;
+      background: rgba(255, 255, 255, 0.85);
+    }
+    .surface-body { padding: 22px 24px; flex: 1; display: flex; flex-direction: column; }
+    .surface-body h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.55rem; margin: 0 0 4px; }
+    .surface-body .surface-count {
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .surface-body p { font-size: 0.96rem; margin: 0 0 12px; }
+    .surface-body .attr-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .surface-body .attr-label { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .surface-body .attr-value { font-size: 0.94rem; color: var(--text); font-weight: 600; }
+
+    .surface-examples {
+      margin: 4px 0 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(11, 107, 83, 0.04);
+      border: 1px solid rgba(11, 107, 83, 0.1);
+    }
+    .surface-examples-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .surface-examples-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .surface-examples-list li {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .surface-examples-list li a {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(11, 107, 83, 0.35);
+    }
+    .surface-examples-list li a:hover {
+      color: var(--accent-strong);
+      border-bottom-color: var(--accent);
+    }
+    .surface-examples-list li .example-meta {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .surface-examples-list li.skeleton { color: var(--muted); font-style: italic; }
+    .surface-examples-list li.empty { color: var(--muted); font-style: italic; }
+
+    .surface-cta {
+      margin-top: 14px;
+      width: 100%;
+      justify-content: center;
+      padding: 11px 18px;
+      font-size: 0.94rem;
+    }
+
+    .surface-glossary { margin-top: 28px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-wrap">
+      <a class="site-brand" href="../">
+        <span class="brand-mark">TTS</span>
+        <span class="brand-name">Toronto Tennis Society</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="../">Home</a>
+        <a href="../access-types/">Access Types</a>
+        <a href="./" aria-current="page">Surface Types</a>
+        <a href="../winter-tennis/">Winter Tennis</a>
+        <a href="../statistics/">Statistics</a>
+        <a class="nav-cta" href="../map/">Open the Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="page-hero">
+      <span class="eyebrow">Reading the map</span>
+      <h1>Court surfaces in Toronto.</h1>
+      <p>Surface affects everything: pace, bounce, footing, even how hard your knees feel the next morning. Toronto's public courts are overwhelmingly hardcourt, but a handful of clubs offer the slower, gentler clay experience.</p>
+    </section>
+
+    <div class="surface-grid">
+
+      <article class="surface-card" data-surface="Hardcourt-Acrylic">
+        <div class="surface-preview" style="--surface-bg: linear-gradient(160deg, #2f5b95 0%, #1e406b 100%);"></div>
+        <div class="surface-body">
+          <h3>Hardcourt — Acrylic</h3>
+          <div class="surface-count" data-surface-count="Hardcourt-Acrylic">—</div>
+          <p>The standard for most Toronto clubs and the City's better-maintained parks. Acrylic paint is layered onto an asphalt or concrete base for consistent bounce and grippy footing.</p>
+          <div class="surface-examples">
+            <div class="surface-examples-label">Where to play</div>
+            <ul class="surface-examples-list" data-surface-examples="Hardcourt-Acrylic">
+              <li class="skeleton">Loading…</li>
+            </ul>
+          </div>
+          <div class="attr-row">
+            <div><div class="attr-label">Pace</div><div class="attr-value">Medium-fast</div></div>
+            <div><div class="attr-label">Bounce</div><div class="attr-value">Predictable</div></div>
+            <div><div class="attr-label">Joints</div><div class="attr-value">Tough</div></div>
+            <div><div class="attr-label">Upkeep</div><div class="attr-value">Resurface 5–8 yrs</div></div>
+          </div>
+          <a class="button primary surface-cta" href="../map/?surface=Hardcourt-Acrylic">View courts on map</a>
+        </div>
+      </article>
+
+      <article class="surface-card" data-surface="Hardcourt-Asphalt">
+        <div class="surface-preview" style="--surface-bg: linear-gradient(160deg, #4d4842 0%, #2d2926 100%);"></div>
+        <div class="surface-body">
+          <h3>Hardcourt — Asphalt</h3>
+          <div class="surface-count" data-surface-count="Hardcourt-Asphalt">—</div>
+          <p>The classic City of Toronto neighbourhood-park surface. Plain rolled asphalt with painted lines — no acrylic top coat. Often cracked, sometimes patched, always playable.</p>
+          <div class="surface-examples">
+            <div class="surface-examples-label">Where to play</div>
+            <ul class="surface-examples-list" data-surface-examples="Hardcourt-Asphalt">
+              <li class="skeleton">Loading…</li>
+            </ul>
+          </div>
+          <div class="attr-row">
+            <div><div class="attr-label">Pace</div><div class="attr-value">Fast</div></div>
+            <div><div class="attr-label">Bounce</div><div class="attr-value">Lively, uneven</div></div>
+            <div><div class="attr-label">Joints</div><div class="attr-value">Toughest</div></div>
+            <div><div class="attr-label">Upkeep</div><div class="attr-value">Minimal</div></div>
+          </div>
+          <a class="button primary surface-cta" href="../map/?surface=Hardcourt-Asphalt">View courts on map</a>
+        </div>
+      </article>
+
+      <article class="surface-card" data-surface="Green-Clay">
+        <div class="surface-preview" style="--surface-bg: linear-gradient(160deg, #7da46a 0%, #4e7a3f 100%);"></div>
+        <div class="surface-body">
+          <h3>Green Clay (Har-Tru)</h3>
+          <div class="surface-count" data-surface-count="Green-Clay">—</div>
+          <p>Crushed metabasalt rolled into a soft, sliding surface. Easier on the knees, harder on technique. Most green-clay courts in the GTA live behind club gates — the Toronto Lawn, Cricket Club, York Racquets, and a few others.</p>
+          <div class="surface-examples">
+            <div class="surface-examples-label">Where to play</div>
+            <ul class="surface-examples-list" data-surface-examples="Green-Clay">
+              <li class="skeleton">Loading…</li>
+            </ul>
+          </div>
+          <div class="attr-row">
+            <div><div class="attr-label">Pace</div><div class="attr-value">Slow</div></div>
+            <div><div class="attr-label">Bounce</div><div class="attr-value">High, slow</div></div>
+            <div><div class="attr-label">Joints</div><div class="attr-value">Gentle</div></div>
+            <div><div class="attr-label">Upkeep</div><div class="attr-value">Daily roll &amp; line</div></div>
+          </div>
+          <a class="button primary surface-cta" href="../map/?surface=Green-Clay">View courts on map</a>
+        </div>
+      </article>
+
+      <article class="surface-card" data-surface="Red-Clay">
+        <div class="surface-preview" style="--surface-bg: linear-gradient(160deg, #b15a39 0%, #7a3922 100%);"></div>
+        <div class="surface-body">
+          <h3>Red Clay</h3>
+          <div class="surface-count" data-surface-count="Red-Clay">—</div>
+          <p>The European classic — crushed brick over a limestone base. Slowest of the slow, beautiful to look at, rare in Toronto. Reserved for premier private clubs that maintain courts to ITF standards.</p>
+          <div class="surface-examples">
+            <div class="surface-examples-label">Where to play</div>
+            <ul class="surface-examples-list" data-surface-examples="Red-Clay">
+              <li class="skeleton">Loading…</li>
+            </ul>
+          </div>
+          <div class="attr-row">
+            <div><div class="attr-label">Pace</div><div class="attr-value">Slowest</div></div>
+            <div><div class="attr-label">Bounce</div><div class="attr-value">Highest, slow</div></div>
+            <div><div class="attr-label">Joints</div><div class="attr-value">Gentlest</div></div>
+            <div><div class="attr-label">Upkeep</div><div class="attr-value">Intensive, daily</div></div>
+          </div>
+          <a class="button primary surface-cta" href="../map/?surface=Red-Clay">View courts on map</a>
+        </div>
+      </article>
+
+      <article class="surface-card" data-surface="Grass">
+        <div class="surface-preview" style="--surface-bg: linear-gradient(160deg, #6ea65f 0%, #3a6230 100%);"></div>
+        <div class="surface-body">
+          <h3>Grass</h3>
+          <div class="surface-count" data-surface-count="Grass">—</div>
+          <p>The Wimbledon surface, vanishingly rare here. Toronto's natural grass courts are largely ceremonial — kept by long-standing private clubs as a nod to tradition. Expect a low, fast, unpredictable bounce.</p>
+          <div class="surface-examples">
+            <div class="surface-examples-label">Where to play</div>
+            <ul class="surface-examples-list" data-surface-examples="Grass">
+              <li class="skeleton">Loading…</li>
+            </ul>
+          </div>
+          <div class="attr-row">
+            <div><div class="attr-label">Pace</div><div class="attr-value">Very fast</div></div>
+            <div><div class="attr-label">Bounce</div><div class="attr-value">Low, skiddy</div></div>
+            <div><div class="attr-label">Joints</div><div class="attr-value">Gentle</div></div>
+            <div><div class="attr-label">Upkeep</div><div class="attr-value">Constant mowing</div></div>
+          </div>
+          <a class="button primary surface-cta" href="../map/?surface=Grass">View courts on map</a>
+        </div>
+      </article>
+
+      <article class="surface-card" data-surface="Artificial Grass">
+        <div class="surface-preview" style="--surface-bg: linear-gradient(160deg, #6cb158 0%, #3d7530 100%);"></div>
+        <div class="surface-body">
+          <h3>Artificial Grass</h3>
+          <div class="surface-count" data-surface-count="Artificial Grass">—</div>
+          <p>Sand-filled synthetic turf. Mimics the gentler footing of clay with much less maintenance. A small number of GTA clubs use it for shoulder-season play.</p>
+          <div class="surface-examples">
+            <div class="surface-examples-label">Where to play</div>
+            <ul class="surface-examples-list" data-surface-examples="Artificial Grass">
+              <li class="skeleton">Loading…</li>
+            </ul>
+          </div>
+          <div class="attr-row">
+            <div><div class="attr-label">Pace</div><div class="attr-value">Medium</div></div>
+            <div><div class="attr-label">Bounce</div><div class="attr-value">True, medium</div></div>
+            <div><div class="attr-label">Joints</div><div class="attr-value">Gentle</div></div>
+            <div><div class="attr-label">Upkeep</div><div class="attr-value">Brush &amp; level</div></div>
+          </div>
+          <a class="button primary surface-cta" href="../map/?surface=Artificial+Grass">View courts on map</a>
+        </div>
+      </article>
+    </div>
+
+    <section class="card surface-glossary">
+      <h2>Indoor surface notes</h2>
+      <p>Indoor venues split into a few build types — the surface itself is usually hardcourt-acrylic, but the structure around it changes how it feels:</p>
+      <dl class="definition-list">
+        <div><dt>Permanent</dt><dd>Year-round indoor facility with a permanent roof (e.g. Mayfair clubs, Toronto Lawn). Climate-controlled and bookable year-round.</dd></div>
+        <div><dt>Bubble</dt><dd>Inflatable dome erected over outdoor hardcourts for the winter — comes down in spring. Most City "winter tennis" venues are bubbles.</dd></div>
+        <div><dt>Field House</dt><dd>Multi-sport indoor facility (typically a university or community centre) where tennis shares time with other programming.</dd></div>
+      </dl>
+    </section>
+
+    <section class="card" style="margin-top: 18px;">
+      <h2>Choosing where to play</h2>
+      <ul>
+        <li><strong>Looking for a fast, classic Toronto game?</strong> Any neighbourhood asphalt court will do.</li>
+        <li><strong>Wanting consistent bounce and good lines?</strong> Filter the map by Hardcourt-Acrylic — the better-maintained public clubs use this surface.</li>
+        <li><strong>Returning from injury or just easier on the body?</strong> Clay is gentler — but you'll need to access one of the private clubs that maintains it.</li>
+        <li><strong>Winter play?</strong> Indoor hardcourt-acrylic is what you're looking for. See the <a href="../winter-tennis/">winter tennis guide</a>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-wrap">
+      <div class="footer-col">
+        <div class="footer-brand">Toronto Tennis Society</div>
+        <p>A community-maintained map and guide to playing tennis in Toronto.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="../map/">Court map</a>
+        <a href="../access-types/">Access types</a>
+        <a href="../surface-types/">Surface types</a>
+        <a href="../winter-tennis/">Winter tennis</a>
+        <a href="../statistics/">Statistics</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/vzcodes/toronto-tennis" target="_blank" rel="noreferrer">GitHub repository</a>
+        <a href="https://github.com/vzcodes/toronto-tennis/issues" target="_blank" rel="noreferrer">Report a court / issue</a>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      Information on this site may not be accurate or up to date. Verify hours, fees, and access with official City of Toronto or club websites before heading out.
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script>
+    function escapeHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+    // Pick a varied 4-court sample for the surface: prioritise different access
+    // buckets so users see public, club, and commercial options when available.
+    function pickExamples(rows, surface, max = 4) {
+      const matching = rows.filter((r) => (r['Primary Surface'] || '').trim() === surface);
+      if (!matching.length) return [];
+      const byBucket = { public: [], public_club: [], school: [], commercial: [], private: [] };
+      matching.forEach((r) => {
+        const b = window.TTS.bucketAccess(r['Public/Private']);
+        if (byBucket[b]) byBucket[b].push(r);
+      });
+      Object.values(byBucket).forEach((arr) => arr.sort((a, b) => (a['Name'] || '').localeCompare(b['Name'] || '')));
+      const order = ['public', 'public_club', 'commercial', 'school', 'private'];
+      const picked = [];
+      const seen = new Set();
+      // Round-robin one from each bucket until we hit max or run out.
+      let stillHave = true;
+      while (picked.length < max && stillHave) {
+        stillHave = false;
+        for (const key of order) {
+          if (picked.length >= max) break;
+          const next = byBucket[key].shift();
+          if (next && !seen.has(next['Name'])) {
+            picked.push(next);
+            seen.add(next['Name']);
+            stillHave = true;
+          }
+        }
+      }
+      return picked;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const rows = await window.TTS.fetchRows();
+        document.querySelectorAll('[data-surface-examples]').forEach((list) => {
+          const surface = list.getAttribute('data-surface-examples');
+          const examples = pickExamples(rows, surface, 4);
+          if (!examples.length) {
+            list.innerHTML = '<li class="empty">No locations in the dataset yet.</li>';
+            return;
+          }
+          list.innerHTML = examples.map((r) => {
+            const name = r['Name'] || 'Unnamed';
+            const city = (r['City'] || '').trim();
+            const courts = (r['Number of Courts'] || '').trim();
+            const meta = [city, courts ? `${courts} court${courts === '1' ? '' : 's'}` : ''].filter(Boolean).join(' · ');
+            const href = `../map/?court=${encodeURIComponent(name)}`;
+            return `<li><a href="${escapeHtml(href)}">${escapeHtml(name)}</a>${meta ? ` <span class="example-meta">— ${escapeHtml(meta)}</span>` : ''}</li>`;
+          }).join('');
+        });
+      } catch (err) {
+        document.querySelectorAll('.surface-examples-list .skeleton').forEach((li) => {
+          li.textContent = 'Could not load examples: ' + err.message;
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Access Types — Toronto Tennis Society</title>
+  <meta name="description" content="What 'public', 'public (club)', 'school', 'commercial', and 'private' mean in the Toronto Tennis Society directory." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <style>
+    .access-card {
+      display: grid;
+      grid-template-columns: 8px 1fr;
+      gap: 18px;
+      padding: 0;
+      overflow: hidden;
+    }
+    .access-card .access-bar { background: var(--access-color, var(--accent)); }
+    .access-card .access-body { padding: 24px 26px; }
+    .access-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.65rem;
+      margin-bottom: 4px;
+    }
+    .access-card .count-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.05);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: 'Source Sans 3', sans-serif;
+      letter-spacing: 0.04em;
+    }
+    .access-card .access-lead { font-size: 1.02rem; line-height: 1.65; color: var(--text); margin: 4px 0 14px; }
+    .access-card ul { margin: 0 0 14px; padding-left: 18px; }
+    .access-card li { color: var(--muted); margin-bottom: 4px; }
+    .access-card .examples { color: var(--muted); font-size: 0.92rem; }
+    .access-card .examples strong { color: var(--text); }
+    .access-card .map-link { display: inline-block; margin-top: 12px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-wrap">
+      <a class="site-brand" href="../">
+        <span class="brand-mark">TTS</span>
+        <span class="brand-name">Toronto Tennis Society</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="../">Home</a>
+        <a href="./" aria-current="page">Access Types</a>
+        <a href="../surface-types/">Surface Types</a>
+        <a href="../winter-tennis/">Winter Tennis</a>
+        <a href="../statistics/">Statistics</a>
+        <a class="nav-cta" href="../map/">Open the Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="page-hero">
+      <span class="eyebrow">Reading the map</span>
+      <h1>Access types, explained.</h1>
+      <p>Toronto's tennis courts come in five flavours of public access. Knowing the difference is the difference between showing up to an open court and finding a locked gate. Here's what each category means in our directory, and what to expect when you turn up to play.</p>
+    </section>
+
+    <div class="card-grid" style="grid-template-columns: 1fr;">
+
+      <article class="card access-card" style="--access-color:#2f8e61;">
+        <div class="access-bar"></div>
+        <div class="access-body">
+          <h3><span class="swatch" style="background:#2f8e61"></span> Public <span class="count-pill" data-access-count="public">—</span></h3>
+          <p class="access-lead">City of Toronto outdoor parks. The bedrock of public tennis: free, first-come-first-serve, and spread across every neighbourhood.</p>
+          <ul>
+            <li>Run by City of Toronto Parks &amp; Recreation.</li>
+            <li>No fee, no membership, no booking — just show up.</li>
+            <li>Most are <strong>seasonal</strong> (open roughly May through October). Nets come down for winter.</li>
+            <li>Many double as community gathering spaces — expect occasional pickleball lines.</li>
+          </ul>
+          <div class="examples"><strong>Examples:</strong> Albion Gardens, Amesbury Park, High Park, Ramsden Park, Trinity Bellwoods.</div>
+          <a class="map-link" href="../map/?access=Public">See public courts on the map →</a>
+        </div>
+      </article>
+
+      <article class="card access-card" style="--access-color:#6ce4a1;">
+        <div class="access-bar"></div>
+        <div class="access-body">
+          <h3><span class="swatch" style="background:#6ce4a1"></span> Public (club) <span class="count-pill" data-access-count="public_club">—</span></h3>
+          <p class="access-lead">Community tennis clubs that operate on City-owned land. Members run the club, but they are <strong>required to offer public hours</strong> when anyone can drop in and play for free.</p>
+          <ul>
+            <li>Permit holders on City of Toronto courts.</li>
+            <li>Public hours posted by day of week — usually a few hours on weekday afternoons, weekend mornings, and holidays.</li>
+            <li>Outside of public hours, the courts are reserved for members.</li>
+            <li>Court conditions are often noticeably better than plain public parks because the club maintains them.</li>
+          </ul>
+          <div class="examples"><strong>Examples:</strong> Agincourt Tennis Club, Bridlebrook Tennis Club, Banbury Tennis Club, Cedarvale Tennis Club.</div>
+          <a class="map-link" href="../map/?access=Private+with+some+public+hours">See public clubs on the map →</a>
+        </div>
+      </article>
+
+      <article class="card access-card" style="--access-color:#f3b66a;">
+        <div class="access-bar"></div>
+        <div class="access-body">
+          <h3><span class="swatch" style="background:#f3b66a"></span> School <span class="count-pill" data-access-count="school">—</span></h3>
+          <p class="access-lead">Toronto District School Board (TDSB) and other public-school courts. Typically open to the public outside of school hours and programs.</p>
+          <ul>
+            <li>Owned by school boards; opened to the public when not in use by the school.</li>
+            <li>Access varies — some courts are fenced and locked outside school hours, others remain open year-round.</li>
+            <li>No formal booking system — same drop-in conventions as City parks.</li>
+            <li>Private independent schools (e.g. UCC, Crescent School) are catalogued under <em>Private</em> because their courts are not publicly accessible.</li>
+          </ul>
+          <div class="examples"><strong>Examples:</strong> Central Toronto Academy, Malvern CI, Harbord CI, Parkdale CI.</div>
+          <a class="map-link" href="../map/?access=Public+School">See school courts on the map →</a>
+        </div>
+      </article>
+
+      <article class="card access-card" style="--access-color:#d04566;">
+        <div class="access-bar"></div>
+        <div class="access-body">
+          <h3><span class="swatch" style="background:#f292a8"></span> Commercial <span class="count-pill" data-access-count="commercial">—</span></h3>
+          <p class="access-lead">Pay-to-play facilities — usually indoor "bubble" venues, year-round clubs, and academies. Anyone can book a court if they pay the hourly rate.</p>
+          <ul>
+            <li>Court time is booked online or by phone. Pricing varies — typically $40–$90 per court hour at peak.</li>
+            <li>Most are indoor-capable (bubbles or hard structures), making them the primary winter option for Torontonians.</li>
+            <li>Many also offer lessons, leagues, and equipment rental.</li>
+            <li>No annual membership required — but most offer membership for booking priority and discounted rates.</li>
+          </ul>
+          <div class="examples"><strong>Examples:</strong> Mayfair Clubs, Premier Racquet Clubs, Toronto Tennis City, North York Tennis Club, Eglinton Flats Winter Tennis.</div>
+          <a class="map-link" href="../map/?access=Commercial+Indoor+Private">See commercial courts on the map →</a>
+        </div>
+      </article>
+
+      <article class="card access-card" style="--access-color:#7a1a1a;">
+        <div class="access-bar"></div>
+        <div class="access-body">
+          <h3><span class="swatch" style="background:#7a1a1a"></span> Private <span class="count-pill" data-access-count="private">—</span></h3>
+          <p class="access-lead">Members-only clubs, elite athletic clubs, condo complexes, and private schools. Not open to the public, but documented here for completeness.</p>
+          <ul>
+            <li><strong>Elite sports clubs</strong> — Granite Club, Toronto Lawn, Boulevard Club, Cricket Club: full-service clubs with multi-year waitlists.</li>
+            <li><strong>Condo &amp; apartment courts</strong> — for residents and their guests only.</li>
+            <li><strong>Private independent schools</strong> — UCC, Crescent, etc. Courts used by students and faculty.</li>
+            <li>Some host occasional ITF / OTA tournaments where the public can attend as spectators.</li>
+          </ul>
+          <div class="examples"><strong>Examples:</strong> Toronto Lawn Tennis Club, Granite Club, The Boulevard Club, York Racquets Club, Upper Canada College.</div>
+          <a class="map-link" href="../map/?access=Elite+Sports+Club">See private clubs on the map →</a>
+        </div>
+      </article>
+    </div>
+
+    <section class="card" style="margin-top: 28px;">
+      <h2>How we classify access</h2>
+      <p>The City of Toronto and individual clubs publish facility data using slightly different labels — we collapse them into the five categories above for consistency on the map. Specifically:</p>
+      <dl class="definition-list">
+        <div><dt>Public</dt><dd>City of Toronto parks listed as <em>Public</em> or <em>Public reservable</em>.</dd></div>
+        <div><dt>Public (club)</dt><dd>Courts listed as <em>Private with some public hours</em> — public hours posted per day.</dd></div>
+        <div><dt>School</dt><dd>Owned by TDSB / TCDSB or labelled <em>Public School</em>. <em>Private Independent Schools</em> are classified as Private.</dd></div>
+        <div><dt>Commercial</dt><dd>Labelled <em>Commercial Indoor Private</em>. Open to anyone who pays.</dd></div>
+        <div><dt>Private</dt><dd>Everything else: members-only clubs (<em>Elite Sports Club</em>), <em>Condo Complex</em>, <em>Luxury Residences</em>, <em>Private Independent School</em>, and unlabelled private courts.</dd></div>
+      </dl>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-wrap">
+      <div class="footer-col">
+        <div class="footer-brand">Toronto Tennis Society</div>
+        <p>A community-maintained map and guide to playing tennis in Toronto.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="../map/">Court map</a>
+        <a href="../access-types/">Access types</a>
+        <a href="../surface-types/">Surface types</a>
+        <a href="../winter-tennis/">Winter tennis</a>
+        <a href="../statistics/">Statistics</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/vzcodes/toronto-tennis" target="_blank" rel="noreferrer">GitHub repository</a>
+        <a href="https://github.com/vzcodes/toronto-tennis/issues" target="_blank" rel="noreferrer">Report a court / issue</a>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      Information on this site may not be accurate or up to date. Verify hours, fees, and access with official City of Toronto or club websites before heading out.
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Statistics — Toronto Tennis Society</title>
+  <meta name="description" content="Counts and breakdowns of Toronto's tennis courts: by access type, surface, neighbourhood, and indoor capacity." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <style>
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px; }
+    .stats-grid > .card { padding: 24px; }
+    .stats-grid h2 { font-size: 1.4rem; margin-bottom: 4px; }
+    .stats-grid p.lead { font-size: 0.94rem; color: var(--muted); margin: 0 0 16px; }
+    .stats-grid .skeleton { color: var(--muted); }
+    @media (max-width: 880px) { .stats-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-wrap">
+      <a class="site-brand" href="../">
+        <span class="brand-mark">TTS</span>
+        <span class="brand-name">Toronto Tennis Society</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="../">Home</a>
+        <a href="../access-types/">Access Types</a>
+        <a href="../surface-types/">Surface Types</a>
+        <a href="../winter-tennis/">Winter Tennis</a>
+        <a href="./" aria-current="page">Statistics</a>
+        <a class="nav-cta" href="../map/">Open the Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="page-hero">
+      <span class="eyebrow">By the numbers</span>
+      <h1>Toronto tennis, in figures.</h1>
+      <p>All numbers below are computed live from the same CSV that powers the map. They include every location we've catalogued — from neighbourhood asphalt courts to elite private clubs — so you can size up the supply at a glance.</p>
+    </section>
+
+    <div class="stat-grid" id="overview-tiles">
+      <div class="stat-tile"><div class="stat-label">Locations</div><div class="stat-value">…</div><div class="stat-hint">Loading</div></div>
+    </div>
+
+    <div class="stats-grid">
+
+      <section class="card">
+        <h2>Access mix</h2>
+        <p class="lead">How many courts live in each access category. Use the map's access filter to drill into any one of these.</p>
+        <ul class="bar-list" id="access-bars">
+          <li class="skeleton">Loading…</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Surface mix</h2>
+        <p class="lead">Hardcourt dominates Toronto. Clay, grass, and artificial grass live almost exclusively behind private club gates.</p>
+        <ul class="bar-list" id="surface-bars">
+          <li class="skeleton">Loading…</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Indoor capacity</h2>
+        <p class="lead">Indoor or indoor-convertible courts vs. outdoor-only. The first column matters most in winter.</p>
+        <ul class="bar-list" id="indoor-bars">
+          <li class="skeleton">Loading…</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Top neighbourhoods</h2>
+        <p class="lead">Where the City has invested the most court capacity. Counts include every access type.</p>
+        <ul class="bar-list" id="neighbourhood-bars">
+          <li class="skeleton">Loading…</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Lights at night</h2>
+        <p class="lead">A surprising number of Toronto's outdoor courts are lit — useful for that 8 p.m. summer hit.</p>
+        <ul class="bar-list" id="lights-bars">
+          <li class="skeleton">Loading…</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Pickleball lines</h2>
+        <p class="lead">Whether a court has secondary pickleball lines painted on. <em>No</em> means tennis-only; a number indicates how many pickleball courts share the lines.</p>
+        <ul class="bar-list" id="pickleball-bars">
+          <li class="skeleton">Loading…</li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-wrap">
+      <div class="footer-col">
+        <div class="footer-brand">Toronto Tennis Society</div>
+        <p>A community-maintained map and guide to playing tennis in Toronto.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="../map/">Court map</a>
+        <a href="../access-types/">Access types</a>
+        <a href="../surface-types/">Surface types</a>
+        <a href="../winter-tennis/">Winter tennis</a>
+        <a href="../statistics/">Statistics</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/vzcodes/toronto-tennis" target="_blank" rel="noreferrer">GitHub repository</a>
+        <a href="https://github.com/vzcodes/toronto-tennis/issues" target="_blank" rel="noreferrer">Report a court / issue</a>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      Information on this site may not be accurate or up to date. Verify hours, fees, and access with official City of Toronto or club websites before heading out.
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script>
+    function escapeHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    const ACCESS_DISPLAY = {
+      public: { label: 'Public', color: '#2f8e61' },
+      public_club: { label: 'Public (club)', color: '#6ce4a1' },
+      school: { label: 'School', color: '#f3b66a' },
+      commercial: { label: 'Commercial', color: '#d04566' },
+      private: { label: 'Private', color: '#7a1a1a' },
+    };
+
+    function renderBars(containerId, entries, options = {}) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const total = entries.reduce((acc, e) => acc + e.value, 0) || 1;
+      const max = entries.reduce((m, e) => Math.max(m, e.value), 0) || 1;
+      container.innerHTML = entries.map((e) => {
+        const pct = (e.value / max) * 100;
+        const share = ((e.value / total) * 100).toFixed(1);
+        const color = e.color || 'var(--accent)';
+        return `
+          <li class="bar-row">
+            <div class="bar-label">
+              <span>${escapeHtml(e.label)}</span>
+              <div class="bar-track"><span class="bar-fill" style="width:${pct}%; background:${color};"></span></div>
+            </div>
+            <div class="bar-count">${e.value.toLocaleString()}<div style="font-weight:400; color: var(--muted); font-size: 0.78rem;">${share}%</div></div>
+          </li>`;
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const rows = await window.TTS.fetchRows();
+        const sum = window.TTS.sumNumber;
+        const totalLocations = rows.length;
+        const totalCourts = rows.reduce((acc, r) => acc + sum(r['Number of Courts']), 0);
+        const indoorOnly = rows.reduce((a, r) => a + (((r['Indoor/Outdoor'] || '').toLowerCase() === 'indoor') ? sum(r['Number of Courts']) : 0), 0);
+        const bothIndoorOutdoor = rows.reduce((a, r) => a + (((r['Indoor/Outdoor'] || '').toLowerCase() === 'both') ? sum(r['Number of Courts']) : 0), 0);
+        const outdoorOnly = totalCourts - indoorOnly - bothIndoorOutdoor;
+        const publicCourts = rows.reduce((a, r) => {
+          const b = window.TTS.bucketAccess(r['Public/Private']);
+          if (b === 'public' || b === 'public_club' || b === 'school') return a + sum(r['Number of Courts']);
+          return a;
+        }, 0);
+
+        // Overview tiles
+        document.getElementById('overview-tiles').innerHTML = `
+          <div class="stat-tile"><div class="stat-label">Locations</div><div class="stat-value">${totalLocations.toLocaleString()}</div><div class="stat-hint">Distinct facilities</div></div>
+          <div class="stat-tile"><div class="stat-label">Courts</div><div class="stat-value">${totalCourts.toLocaleString()}</div><div class="stat-hint">Total catalogued</div></div>
+          <div class="stat-tile"><div class="stat-label">Publicly playable</div><div class="stat-value">${publicCourts.toLocaleString()}</div><div class="stat-hint">Public + school + public-club</div></div>
+          <div class="stat-tile"><div class="stat-label">Indoor courts</div><div class="stat-value">${(indoorOnly + bothIndoorOutdoor).toLocaleString()}</div><div class="stat-hint">${indoorOnly} dedicated + ${bothIndoorOutdoor} convertible</div></div>
+        `;
+
+        // Access mix
+        const accessTotals = { public: 0, public_club: 0, school: 0, commercial: 0, private: 0 };
+        rows.forEach((r) => {
+          accessTotals[window.TTS.bucketAccess(r['Public/Private'])] += sum(r['Number of Courts']);
+        });
+        renderBars('access-bars', Object.entries(accessTotals)
+          .sort((a, b) => b[1] - a[1])
+          .map(([k, v]) => ({ label: ACCESS_DISPLAY[k].label, value: v, color: ACCESS_DISPLAY[k].color })));
+
+        // Surface mix
+        const surfaceTotals = {};
+        rows.forEach((r) => {
+          const s = (r['Primary Surface'] || 'Unknown').trim() || 'Unknown';
+          surfaceTotals[s] = (surfaceTotals[s] || 0) + sum(r['Number of Courts']);
+        });
+        renderBars('surface-bars', Object.entries(surfaceTotals)
+          .sort((a, b) => b[1] - a[1])
+          .map(([k, v]) => ({ label: k, value: v })));
+
+        // Indoor
+        renderBars('indoor-bars', [
+          { label: 'Indoor (year-round)', value: indoorOnly, color: '#2f8e61' },
+          { label: 'Both (seasonal bubble)', value: bothIndoorOutdoor, color: '#6ec0ff' },
+          { label: 'Outdoor only', value: outdoorOnly, color: '#5f5a52' },
+        ]);
+
+        // Neighbourhoods
+        const neighbourhoodTotals = {};
+        rows.forEach((r) => {
+          const c = (r['City'] || 'Unknown').trim() || 'Unknown';
+          neighbourhoodTotals[c] = (neighbourhoodTotals[c] || 0) + sum(r['Number of Courts']);
+        });
+        renderBars('neighbourhood-bars', Object.entries(neighbourhoodTotals)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 12)
+          .map(([k, v]) => ({ label: k, value: v })));
+
+        // Lights
+        const lightsTotals = {};
+        rows.forEach((r) => {
+          const l = (r['Lights/No Lights'] || 'Unknown').trim() || 'Unknown';
+          lightsTotals[l] = (lightsTotals[l] || 0) + sum(r['Number of Courts']);
+        });
+        renderBars('lights-bars', Object.entries(lightsTotals)
+          .sort((a, b) => b[1] - a[1])
+          .map(([k, v]) => ({ label: k, value: v })));
+
+        // Pickleball
+        const pickleTotals = { 'Tennis only': 0, 'Has pickleball lines': 0 };
+        rows.forEach((r) => {
+          const p = (r['Pickleball Lines'] || '').trim();
+          if (!p || p.toLowerCase() === 'no' || p === '0') pickleTotals['Tennis only'] += sum(r['Number of Courts']);
+          else pickleTotals['Has pickleball lines'] += sum(r['Number of Courts']);
+        });
+        renderBars('pickleball-bars', Object.entries(pickleTotals)
+          .map(([k, v]) => ({ label: k, value: v, color: k.startsWith('Tennis') ? 'var(--accent)' : '#b9520a' })));
+
+      } catch (err) {
+        document.querySelectorAll('.bar-list .skeleton').forEach((el) => {
+          el.textContent = 'Failed to load: ' + err.message;
+        });
+      }
+    });
+  </script>
+</body>
+</html>

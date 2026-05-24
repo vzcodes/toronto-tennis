@@ -3,129 +3,241 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Toronto Tennis Courts</title>
+  <title>Court Map — Toronto Tennis Society</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
     :root {
-      --bg: #0d0f0d;
-      --panel: rgba(20, 26, 21, 0.94);
-      --panel-soft: rgba(255, 255, 255, 0.04);
-      --stroke: rgba(255, 255, 255, 0.09);
-      --text: #f2f6f1;
-      --muted: rgba(242, 246, 241, 0.7);
-      --accent: #54c08a;
-      --accent-strong: #2f9a67;
-      --accent-soft: rgba(84, 192, 138, 0.16);
-      --warning: #f3b66a;
+      color-scheme: light;
+      --bg: #f6f1e8;
+      --bg-soft: #fffdf8;
+      --bg-deep: #eadfcf;
+      --panel: #fffaf2;
+      --panel-strong: #ffffff;
+      --text: #1d1d1b;
+      --text-soft: #34302a;
+      --muted: #5f5a52;
+      --muted-strong: #3b3833;
+      --accent: #0b6b53;
+      --accent-strong: #074f3e;
+      --accent-soft: rgba(11, 107, 83, 0.1);
+      --accent-soft-strong: rgba(11, 107, 83, 0.18);
+      --border: #e4d8c8;
+      --border-strong: #d2c1a9;
+      --warning: #b9520a;
+      --shadow-soft: 0 18px 40px rgba(37, 28, 13, 0.08);
+      --shadow-card: 0 10px 24px rgba(37, 28, 13, 0.06);
     }
 
     * { box-sizing: border-box; }
+
     html, body {
       height: 100%;
       margin: 0;
       overflow: hidden;
-      background:
-        radial-gradient(circle at top left, rgba(84, 192, 138, 0.12), transparent 32%),
-        linear-gradient(180deg, #121512 0%, #0a0c0a 100%);
+      overflow-x: hidden;
+      font-family: 'Source Sans 3', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       color: var(--text);
-      font-family: 'Roboto', system-ui, sans-serif;
+      background:
+        radial-gradient(900px 500px at 50% -120px, var(--bg-soft) 0%, var(--bg) 55%, var(--bg-deep) 100%);
+      -webkit-font-smoothing: antialiased;
     }
 
-    a { color: inherit; }
-
-    .shell {
-      height: 100vh;
-      display: grid;
-      grid-template-rows: auto 1fr;
-      min-height: 0;
-    }
-
-    .banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px 18px;
-      background: rgba(0, 0, 0, 0.88);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      position: relative;
-      z-index: 1000;
-    }
-
-    .brand-block {
+    body {
       display: flex;
       flex-direction: column;
-      gap: 4px;
       min-width: 0;
     }
 
-    .brand {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.02rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-weight: 700;
-      line-height: 1;
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-strong); }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+      line-height: 1.2;
     }
 
-    .brand .accent { color: var(--accent); }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 0.82rem;
-      letter-spacing: 0.02em;
+    /* ---------- Site header (shared cream design) ---------- */
+    .site-header {
+      background: rgba(255, 252, 246, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 50;
     }
 
-    .banner-actions {
+    .header-wrap {
+      padding: 12px 24px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      gap: 20px;
     }
 
-    .badge {
+    .site-brand {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--text);
-      font-size: 0.84rem;
+      gap: 10px;
       text-decoration: none;
-      white-space: nowrap;
+      color: var(--text);
+      font-weight: 700;
     }
 
-    .badge strong { font-weight: 700; }
-
-    .info-wrap {
-      position: relative;
-      display: inline-flex;
-    }
-
-    .info-button {
+    .brand-mark {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 9px 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.18rem;
+      letter-spacing: 0.01em;
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .site-nav a {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
       border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(255, 255, 255, 0.03);
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.94rem;
+      transition: background 140ms ease, color 140ms ease;
+    }
+
+    .site-nav a:hover { color: var(--accent-strong); background: var(--accent-soft); }
+
+    .site-nav a[aria-current="page"] {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .nav-toggle {
+      display: none;
+      margin-left: auto;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    /* ---------- Map toolbar (page actions) ---------- */
+    .map-toolbar {
+      background: rgba(255, 252, 246, 0.65);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 40;
+    }
+
+    .toolbar-wrap {
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.74rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .toolbar-count {
+      font-size: 0.9rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toolbar-count strong { color: var(--text); font-weight: 700; }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel-strong);
       color: var(--text);
       font: inherit;
-      font-size: 0.84rem;
+      font-size: 0.88rem;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
+      box-shadow: var(--shadow-card);
+      transition: background 140ms ease, border-color 140ms ease, transform 140ms ease, color 140ms ease;
     }
 
-    .info-button:hover { background: rgba(255, 255, 255, 0.06); }
+    .toolbar-button:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+
+    .plan-launch {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .plan-launch:hover {
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+      color: white;
+    }
+
+    .plan-launch[aria-pressed="true"] {
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+      color: white;
+    }
+
+    /* ---------- Info popover ---------- */
+    .info-wrap { position: relative; display: inline-flex; }
 
     .info-button .info-icon {
       display: inline-flex;
@@ -135,10 +247,10 @@
       height: 18px;
       border-radius: 50%;
       background: var(--accent);
-      color: #08110c;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.74rem;
-      font-weight: 900;
+      color: white;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.82rem;
+      font-weight: 700;
       font-style: italic;
     }
 
@@ -149,11 +261,11 @@
       width: min(360px, 90vw);
       padding: 16px 18px;
       border-radius: 18px;
-      background: rgba(13, 16, 13, 0.98);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
       color: var(--text);
-      font-size: 0.88rem;
+      font-size: 0.92rem;
       line-height: 1.55;
       z-index: 1000;
     }
@@ -162,21 +274,19 @@
 
     .info-popover h3 {
       margin: 0 0 8px;
-      font-size: 0.78rem;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--accent);
+      font-weight: 700;
     }
 
-    .info-popover p {
-      margin: 0 0 10px;
-      color: var(--muted);
-    }
-
+    .info-popover p { margin: 0 0 10px; color: var(--muted); }
     .info-popover p:last-child { margin-bottom: 0; }
 
     .info-popover a {
-      color: #a8f1c7;
+      color: var(--accent);
       font-weight: 700;
       text-decoration: underline;
       text-decoration-thickness: 1px;
@@ -184,17 +294,21 @@
       word-break: break-word;
     }
 
+    /* ---------- App grid ---------- */
     .main-grid {
+      flex: 1;
       min-height: 0;
+      min-width: 0;
       display: grid;
       grid-template-columns: 392px minmax(0, 1fr);
     }
 
     .sidebar {
       min-height: 0;
+      min-width: 0;
       overflow: auto;
-      background: linear-gradient(180deg, rgba(18, 22, 18, 0.98), rgba(15, 18, 15, 0.96));
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--bg-soft);
+      border-right: 1px solid var(--border);
       padding: 16px;
     }
 
@@ -203,6 +317,7 @@
       flex-direction: column;
       gap: 14px;
       min-height: 100%;
+      min-width: 0;
     }
 
     .search-card,
@@ -211,45 +326,33 @@
     .plan-card,
     .list-card,
     .detail-card {
-      border: 1px solid var(--stroke);
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.03);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--panel-strong);
+      box-shadow: var(--shadow-card);
     }
 
     .search-card { padding: 12px; }
     .stats-card { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .filters-card { padding: 14px 16px; }
-    .plan-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+    .plan-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; border-color: var(--accent); background: linear-gradient(180deg, var(--accent-soft) 0%, var(--panel-strong) 65%); }
+    .plan-card[hidden] { display: none; }
     .list-card { overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
     .detail-card { display: flex; flex-direction: column; gap: 14px; padding: 16px; }
 
-    .plan-card.active {
-      border-color: rgba(84, 192, 138, 0.45);
-      background: linear-gradient(180deg, rgba(84, 192, 138, 0.08), rgba(255, 255, 255, 0.03));
+    .plan-close {
+      padding: 6px 12px;
+      line-height: 1;
+      min-width: 36px;
+      font-size: 1.1rem;
     }
 
-    .plan-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.04);
+    .plan-help {
+      margin: 0;
       color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
+      font-size: 0.88rem;
+      line-height: 1.5;
     }
-
-    .plan-toggle input { accent-color: var(--accent); margin: 0; }
-    .plan-card.active .plan-toggle { color: var(--accent); border-color: rgba(84, 192, 138, 0.5); background: rgba(84, 192, 138, 0.14); }
-
-    .plan-help { margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
 
     .plan-grid {
       display: grid;
@@ -257,26 +360,40 @@
       gap: 10px;
     }
 
-    .plan-grid label {
+    .plan-grid label,
+    .filter-grid label {
       display: grid;
       gap: 6px;
       color: var(--muted);
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.09em;
+      font-weight: 700;
     }
 
-    .plan-grid input {
+    .plan-grid input,
+    .search-row input,
+    .filter-grid select {
       width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.11);
-      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      background: white;
       color: var(--text);
-      border-radius: 14px;
-      padding: 11px 12px;
+      border-radius: 12px;
+      padding: 10px 12px;
       outline: none;
       font: inherit;
-      color-scheme: dark;
+      font-size: 0.94rem;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
     }
+
+    .plan-grid input:focus,
+    .search-row input:focus,
+    .filter-grid select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .search-row input::placeholder { color: var(--muted); }
 
     .plan-actions {
       display: flex;
@@ -285,14 +402,14 @@
       flex-wrap: wrap;
     }
 
-    .plan-now { padding: 8px 14px; font-size: 0.82rem; }
+    .plan-now { padding: 8px 14px; font-size: 0.84rem; }
 
     .plan-check {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--muted);
-      font-size: 0.84rem;
+      color: var(--muted-strong);
+      font-size: 0.88rem;
       cursor: pointer;
     }
 
@@ -301,19 +418,15 @@
     .plan-summary {
       padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
-      color: var(--muted);
-      font-size: 0.84rem;
-      line-height: 1.45;
+      background: var(--accent-soft);
+      border: 1px dashed var(--accent);
+      color: var(--accent-strong);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      font-weight: 600;
     }
 
-    .plan-card.active .plan-summary {
-      background: rgba(84, 192, 138, 0.1);
-      border-color: rgba(84, 192, 138, 0.32);
-      color: #d4f5e2;
-    }
-
+    /* ---------- Detail card ---------- */
     .detail-header {
       display: flex;
       align-items: flex-start;
@@ -326,21 +439,24 @@
       color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      font-size: 0.72rem;
-      font-weight: 800;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: 'Source Sans 3', sans-serif;
     }
 
     .detail-name {
       margin: 0;
-      font-size: 1.15rem;
-      line-height: 1.25;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.45rem;
+      line-height: 1.18;
+      color: var(--text);
     }
 
     .detail-address {
       margin: 6px 0 0;
       color: var(--muted);
       line-height: 1.45;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
     }
 
     .detail-close {
@@ -359,47 +475,50 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 14px;
+      padding: 9px 14px;
       border-radius: 999px;
       text-decoration: none;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent-strong);
       font-size: 0.84rem;
-      font-weight: 800;
+      font-weight: 700;
     }
+    .detail-link:hover { background: var(--accent); color: white; }
 
-    .detail-grid {
-      display: grid;
-      gap: 10px;
-    }
+    .detail-grid { display: grid; gap: 10px; }
 
     .detail-row {
       display: grid;
       gap: 4px;
       padding-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--border);
     }
-
-    .detail-row:first-child {
-      padding-top: 0;
-      border-top: 0;
-    }
+    .detail-row:first-child { padding-top: 0; border-top: 0; }
 
     .detail-label {
-      color: rgba(242, 246, 241, 0.62);
+      color: var(--muted);
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      font-weight: 700;
     }
 
     .detail-value {
       color: var(--text);
-      font-size: 0.93rem;
-      line-height: 1.45;
+      font-size: 0.94rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
-    .detail-value a { color: #a8f1c7; font-weight: 700; word-break: break-word; }
+    .detail-value a {
+      color: var(--accent);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
 
     .hours-list {
       list-style: none;
@@ -418,16 +537,13 @@
 
     .hours-day {
       color: var(--accent);
-      font-weight: 800;
-      font-size: 0.74rem;
+      font-weight: 700;
+      font-size: 0.72rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
 
-    .hours-time {
-      color: var(--text);
-      font-size: 0.9rem;
-    }
+    .hours-time { color: var(--text); font-size: 0.92rem; }
 
     .search-row {
       display: grid;
@@ -435,20 +551,7 @@
       gap: 10px;
     }
 
-    .search-row input,
-    .filter-grid select {
-      width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.11);
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 12px 14px;
-      outline: none;
-      font: inherit;
-    }
-
-    .search-row input::placeholder { color: rgba(242, 246, 241, 0.52); }
-
+    /* ---------- Buttons ---------- */
     .primary-button,
     .ghost-button,
     .type-button {
@@ -460,20 +563,23 @@
     }
 
     .primary-button {
-      background: linear-gradient(180deg, #5cd493, #36a06a);
-      color: #08110c;
-      font-weight: 800;
-      padding: 0 16px;
-      min-width: 70px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      padding: 0 18px;
+      min-width: 64px;
+      border: 1px solid var(--accent);
     }
+    .primary-button:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
 
     .ghost-button {
-      background: rgba(255, 255, 255, 0.05);
+      background: white;
       color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 10px 14px;
+      border: 1px solid var(--border);
+      padding: 9px 14px;
       font-weight: 700;
     }
+    .ghost-button:hover { border-color: var(--border-strong); }
 
     .primary-button:hover,
     .ghost-button:hover,
@@ -488,14 +594,16 @@
 
     .metric .label {
       color: var(--muted);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.12em;
+      font-weight: 700;
     }
 
     .metric .value {
-      font-size: 1.05rem;
-      font-weight: 800;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text);
     }
 
     .count-chip {
@@ -506,7 +614,7 @@
       border-radius: 999px;
       background: var(--accent-soft);
       color: var(--accent);
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       font-weight: 700;
       white-space: nowrap;
     }
@@ -521,29 +629,20 @@
 
     .section-title h2 {
       margin: 0;
-      font-size: 0.98rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--text);
     }
 
-    .section-title span {
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
+    .section-title span { color: var(--muted); font-size: 0.86rem; }
 
     .filter-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-    }
-
-    .filter-grid label {
-      display: grid;
-      gap: 6px;
-      color: var(--muted);
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
     }
 
     .filter-actions {
@@ -553,10 +652,11 @@
       flex-wrap: wrap;
     }
 
+    /* ---------- Locations list ---------- */
     .list-header {
       padding: 14px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-soft);
     }
 
     .list-header .title {
@@ -569,13 +669,16 @@
 
     .list-header h3 {
       margin: 0;
-      font-size: 1rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.22rem;
+      font-weight: 600;
+      color: var(--text);
     }
 
     .list-header p {
       margin: 0;
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       line-height: 1.5;
     }
 
@@ -587,27 +690,32 @@
 
     .list-item {
       padding: 12px;
-      border-radius: 16px;
-      border: 1px solid transparent;
-      background: rgba(255, 255, 255, 0.03);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: white;
       cursor: pointer;
       margin-bottom: 10px;
+      transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+      overflow-wrap: anywhere;
     }
 
+    .list-item:hover { border-color: var(--border-strong); }
+
     .list-item.active {
-      border-color: rgba(84, 192, 138, 0.5);
-      background: linear-gradient(180deg, rgba(84, 192, 138, 0.12), rgba(255, 255, 255, 0.03));
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: var(--shadow-card);
     }
 
     .list-name {
-      font-weight: 800;
+      font-weight: 700;
       line-height: 1.3;
       margin-bottom: 6px;
+      color: var(--text);
     }
 
     .list-address {
-      font-size: 0.82rem;
+      font-size: 0.86rem;
       color: var(--muted);
       line-height: 1.45;
       margin-bottom: 10px;
@@ -624,44 +732,47 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      color: var(--text);
-      font-size: 0.74rem;
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted-strong);
+      font-size: 0.76rem;
+      font-weight: 600;
     }
 
     .chip.accent {
-      background: rgba(84, 192, 138, 0.14);
-      color: #a9f1c8;
-      border-color: rgba(84, 192, 138, 0.24);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      border-color: var(--accent);
     }
 
     .link-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      font-size: 0.84rem;
+      font-size: 0.86rem;
     }
 
     .link-row a {
-      color: #cbf6dc;
+      color: var(--accent);
       text-decoration: none;
       font-weight: 700;
     }
 
+    /* ---------- Map pane ---------- */
     .map-pane {
       position: relative;
       min-height: 0;
-      background: #b8c9be;
+      min-width: 0;
+      background: #d9d4c5;
     }
 
     .map-pane .leaflet-container {
       width: 100%;
       height: 100%;
-      background: #b8c9be;
-      font-family: 'Roboto', system-ui, sans-serif;
+      background: #d9d4c5;
+      font-family: 'Source Sans 3', system-ui, sans-serif;
     }
 
     .selected-court-badge {
@@ -675,7 +786,7 @@
       font-size: 26px;
       line-height: 1;
       text-align: center;
-      filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55));
+      filter: drop-shadow(0 3px 5px rgba(37, 28, 13, 0.45));
       transform-origin: 50% 100%;
       animation: court-pin-drop 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
     }
@@ -705,44 +816,47 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 14px;
+      padding: 9px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(10, 14, 10, 0.82);
+      border: 1px solid var(--border);
+      background: var(--panel-strong);
       color: var(--text);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+      box-shadow: var(--shadow-card);
       font-weight: 700;
+      font-size: 0.88rem;
     }
 
     .type-group {
       display: inline-flex;
-      gap: 6px;
-      padding: 6px;
+      gap: 4px;
+      padding: 4px;
       border-radius: 999px;
-      background: rgba(10, 14, 10, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
       pointer-events: auto;
+      box-shadow: var(--shadow-card);
     }
 
     .type-button {
-      padding: 9px 13px;
-      color: rgba(242, 246, 241, 0.78);
+      padding: 8px 14px;
+      color: var(--muted);
       background: transparent;
       border: 1px solid transparent;
-      font-weight: 800;
-      letter-spacing: 0.02em;
+      font-weight: 700;
+      font-size: 0.86rem;
     }
 
     .type-button.active {
-      color: #08110c;
-      background: linear-gradient(180deg, #6ce4a1, #52c785);
-      box-shadow: 0 8px 20px rgba(83, 196, 135, 0.28);
+      color: white;
+      background: var(--accent);
     }
 
     .street-view-launch {
       text-decoration: none;
       white-space: nowrap;
+      color: var(--text);
     }
+    .street-view-launch:hover { color: var(--accent-strong); border-color: var(--border-strong); }
 
     .map-footer {
       position: absolute;
@@ -758,39 +872,53 @@
 
     .map-note {
       pointer-events: auto;
-      padding: 10px 14px;
+      padding: 9px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(10, 14, 10, 0.82);
-      color: var(--muted);
-      font-size: 0.82rem;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+      border: 1px solid var(--border);
+      background: var(--panel-strong);
+      color: var(--muted-strong);
+      font-size: 0.86rem;
+      box-shadow: var(--shadow-card);
     }
 
+    /* ---------- Leaflet overrides ---------- */
     .leaflet-control-zoom a {
-      border-radius: 10px !important;
-      background: rgba(17, 22, 17, 0.92) !important;
-      color: #fff !important;
-      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      border-radius: 8px !important;
+      background: var(--panel-strong) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      font-weight: 700;
+      box-shadow: var(--shadow-card);
     }
+
+    .leaflet-control-zoom a:hover { background: var(--bg-soft) !important; }
 
     .leaflet-popup-content-wrapper,
     .leaflet-popup-tip {
-      background: rgba(13, 16, 13, 0.96);
+      background: var(--panel-strong);
       color: var(--text);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      box-shadow: var(--shadow-soft);
+      border-radius: 14px;
     }
 
     .leaflet-popup-content {
-      margin: 12px 14px;
-      font-family: 'Roboto', system-ui, sans-serif;
+      margin: 14px 16px;
+      font-family: 'Source Sans 3', system-ui, sans-serif;
       line-height: 1.5;
     }
 
     .leaflet-popup-content a {
-      color: #a8f1c7;
+      color: var(--accent);
       font-weight: 700;
     }
+
+    .leaflet-control-attribution {
+      background: rgba(255, 252, 246, 0.85) !important;
+      color: var(--muted) !important;
+      font-size: 11px !important;
+    }
+
+    .leaflet-control-attribution a { color: var(--accent) !important; }
 
     .popup-card {
       min-width: 220px;
@@ -798,10 +926,12 @@
     }
 
     .popup-title {
-      font-weight: 900;
-      font-size: 1rem;
-      line-height: 1.35;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      font-size: 1.15rem;
+      line-height: 1.3;
       margin-bottom: 10px;
+      color: var(--text);
     }
 
     .popup-links {
@@ -811,28 +941,23 @@
       margin-bottom: 12px;
     }
 
-    .popup-details {
-      display: grid;
-      gap: 8px;
-    }
+    .popup-details { display: grid; gap: 8px; }
 
     .popup-row {
       display: grid;
       gap: 2px;
       padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--border);
     }
 
-    .popup-row:first-child {
-      padding-top: 0;
-      border-top: 0;
-    }
+    .popup-row:first-child { padding-top: 0; border-top: 0; }
 
     .popup-label {
-      color: rgba(242, 246, 241, 0.62);
+      color: var(--muted);
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      font-weight: 700;
     }
 
     .popup-value {
@@ -842,7 +967,7 @@
     }
 
     .empty-state {
-      padding: 20px 16px 24px;
+      padding: 24px 18px 28px;
       color: var(--muted);
       text-align: center;
       line-height: 1.6;
@@ -850,7 +975,7 @@
 
     .legend {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       margin-top: 12px;
       flex-wrap: wrap;
@@ -860,52 +985,123 @@
       display: inline-flex;
       gap: 8px;
       align-items: center;
-      padding: 6px 8px;
+      padding: 5px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.04);
+      background: white;
+      border: 1px solid var(--border);
       font-size: 0.82rem;
+      color: var(--muted-strong);
+      font-weight: 600;
     }
 
     .legend-swatch {
       width: 12px;
       height: 12px;
       border-radius: 3px;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.24) inset;
+      border: 1px solid rgba(0, 0, 0, 0.08);
     }
 
+    /* ---------- Responsive ---------- */
     @media (max-width: 980px) {
-      .main-grid { grid-template-columns: 1fr; grid-template-rows: minmax(48vh, 58vh) minmax(0, 42vh); }
-      .sidebar { order: 2; border-right: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+      html, body { overflow: auto; overflow-x: hidden; }
+      body { min-height: 100vh; height: auto; }
+      .site-header { position: sticky; top: 0; }
+      .main-grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(52vh, 60vh) auto;
+      }
+      .sidebar {
+        order: 2;
+        border-right: 0;
+        border-top: 1px solid var(--border);
+        overflow: visible;
+      }
       .map-pane { order: 1; }
+      .info-popover { width: min(340px, calc(100vw - 32px)); }
+    }
+
+    @media (max-width: 880px) {
+      .nav-toggle { display: inline-flex; align-items: center; gap: 8px; }
+      .header-wrap { flex-wrap: wrap; }
+      .site-brand { min-width: 0; flex-shrink: 1; }
+      .brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .site-nav {
+        order: 99;
+        flex-basis: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 8px 0 4px;
+        margin-left: 0;
+      }
+      .site-nav[hidden] { display: none; }
+      .site-nav a { padding: 12px 14px; }
     }
 
     @media (max-width: 640px) {
-      .banner { padding: 12px 14px; align-items: flex-start; flex-direction: column; }
-      .banner-actions { justify-content: flex-start; }
+      .header-wrap { padding: 12px 14px; gap: 12px; }
+      .brand-name { font-size: 1.05rem; }
+      .toolbar-wrap { padding: 10px 14px; gap: 10px; }
+      .toolbar-meta { gap: 10px; }
+      .toolbar-actions { margin-left: 0; width: 100%; justify-content: flex-start; }
+      .toolbar-button { padding: 10px 14px; font-size: 0.92rem; }
       .sidebar { padding: 12px; }
       .search-row { grid-template-columns: 1fr; }
       .filter-grid { grid-template-columns: 1fr; }
-      .map-controls { left: 12px; right: 12px; top: 12px; justify-content: flex-start; }
+      .plan-grid { grid-template-columns: 1fr; }
+      .stats-card { flex-wrap: wrap; }
+      .map-controls { left: 12px; right: 12px; top: 12px; justify-content: flex-start; gap: 8px; }
       .map-footer { left: 12px; right: 12px; bottom: 12px; }
+      .map-note { font-size: 0.82rem; padding: 8px 12px; }
       .type-group { width: 100%; justify-content: space-between; }
-      .type-button { flex: 1; }
+      .type-button { flex: 1; padding: 10px 8px; }
+      .street-view-launch { padding: 10px 14px; }
+      .detail-header { flex-wrap: wrap; }
+      .detail-link { flex: 1 1 auto; }
+      .info-popover { right: -8px; }
+    }
+
+    @media (max-width: 380px) {
+      .toolbar-meta { flex-basis: 100%; }
+      .toolbar-actions { gap: 8px; }
+      .toolbar-button { padding: 9px 12px; font-size: 0.86rem; }
+      .toolbar-button .info-icon { width: 16px; height: 16px; font-size: 0.78rem; }
+      .brand-name { font-size: 1rem; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <header class="banner">
-      <div class="brand-block">
-        <div class="brand">Toronto <span class="accent">Tennis</span> Courts</div>
-        <div class="subtitle">Explore all tennis courts within the City of Toronto</div>
+  <header class="site-header">
+    <div class="header-wrap">
+      <a class="site-brand" href="../">
+        <span class="brand-mark" aria-hidden="true">TT</span>
+        <span class="brand-name">Toronto Tennis Society</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="../">Home</a>
+        <a href="../access-types/">Access Types</a>
+        <a href="../surface-types/">Surface Types</a>
+        <a href="../winter-tennis/">Winter Tennis</a>
+        <a href="../statistics/">Statistics</a>
+        <a href="./" aria-current="page">Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="map-toolbar">
+    <div class="toolbar-wrap">
+      <div class="toolbar-meta">
+        <span class="toolbar-eyebrow">Court Map</span>
+        <span class="toolbar-count"><strong id="banner-count">0</strong> locations</span>
       </div>
-      <div class="banner-actions">
-        <a class="badge" href="../index.html">Home</a>
-        <div class="badge"><strong id="banner-count">0</strong> locations</div>
+      <div class="toolbar-actions">
+        <button class="toolbar-button plan-launch" id="plan-launch" type="button" aria-pressed="false">
+          <span aria-hidden="true">🎾</span>
+          <span>Plan a Hit</span>
+        </button>
         <div class="info-wrap">
-          <button class="info-button" id="info-toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="info-popover">
+          <button class="toolbar-button info-button" id="info-toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="info-popover">
             <span class="info-icon" aria-hidden="true">i</span>
             <span>Info</span>
           </button>
@@ -916,9 +1112,10 @@
           </div>
         </div>
       </div>
-    </header>
+    </div>
+  </div>
 
-    <div class="main-grid">
+  <div class="main-grid">
       <aside class="sidebar">
         <div class="sidebar-shell">
           <div class="search-card">
@@ -965,15 +1162,12 @@
             <div id="legend" class="legend" aria-label="Access legend"></div>
           </div>
 
-          <div class="plan-card">
+          <div class="plan-card" id="plan-card" hidden>
             <div class="section-title">
               <h2>Plan a Hit</h2>
-              <label class="plan-toggle">
-                <input type="checkbox" id="plan-enabled" />
-                <span>Active</span>
-              </label>
+              <button class="ghost-button plan-close" id="plan-close" type="button" aria-label="Close planner">×</button>
             </div>
-            <p class="plan-help">Show public courts &amp; clubs open at a chosen day &amp; time.</p>
+            <p class="plan-help">Show public courts, clubs &amp; commercial venues open at a chosen day &amp; time. October–April defaults to indoor courts only.</p>
             <div class="plan-grid">
               <label>
                 Date
@@ -1037,9 +1231,29 @@
         <div id="map"></div>
       </div>
     </div>
-  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    (function setupNavToggle() {
+      const btn = document.getElementById('nav-toggle');
+      const nav = document.getElementById('site-nav');
+      if (!btn || !nav) return;
+      const apply = () => {
+        if (window.matchMedia('(max-width: 880px)').matches) {
+          nav.hidden = btn.getAttribute('aria-expanded') !== 'true';
+        } else {
+          nav.hidden = false;
+        }
+      };
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        apply();
+      });
+      window.addEventListener('resize', apply);
+      apply();
+    })();
+  </script>
   <script>
     function parseCSV(text) {
       const rows = [];
@@ -1245,33 +1459,70 @@
     function updatePlanSummary() {
       if (!controls.planSummary || !controls.planCard) return;
       const plan = getPlanState();
-      controls.planCard.classList.toggle('active', !!plan.enabled);
+      if (controls.planLaunch) controls.planLaunch.setAttribute('aria-pressed', plan.enabled ? 'true' : 'false');
       if (!plan.dateStr || !plan.timeStr) {
-        controls.planSummary.textContent = 'Pick a date and time to plan a play.';
+        controls.planSummary.textContent = 'Pick a date and time to plan a hit.';
         return;
       }
       const d = new Date(`${plan.dateStr}T${plan.timeStr}`);
       if (Number.isNaN(d.getTime())) {
-        controls.planSummary.textContent = 'Pick a date and time to plan a play.';
+        controls.planSummary.textContent = 'Pick a date and time to plan a hit.';
         return;
       }
       const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
       const timeFmt = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-      const holidayBadge = plan.holiday ? ' · using holiday hours' : '';
-      const status = plan.enabled ? 'Filtering to public courts open' : 'Showing all courts';
-      controls.planSummary.textContent = `${status} ${plan.enabled ? 'on ' : '· '}${dayName} at ${timeFmt}${holidayBadge}.`;
+      const badges = [];
+      if (plan.holiday) badges.push('using holiday hours');
+      if (plan.isWinter) badges.push('indoor only (winter)');
+      const badgeText = badges.length ? ` · ${badges.join(' · ')}` : '';
+      controls.planSummary.textContent = `Filtering to courts open on ${dayName} at ${timeFmt}${badgeText}.`;
     }
 
-    function isCourtOpenAt(item, dayIndex, minutes, isHoliday) {
+    function openPlan({ skipRefresh = false } = {}) {
+      if (!controls.planCard) return;
+      controls.planCard.hidden = false;
+      setPlanInputsToNow();
+      updatePlanSummary();
+      if (!skipRefresh) {
+        refreshView();
+        if (controls.planCard.scrollIntoView) {
+          controls.planCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    }
+
+    function closePlan() {
+      if (!controls.planCard) return;
+      controls.planCard.hidden = true;
+      if (controls.planHoliday) controls.planHoliday.checked = false;
+      updatePlanSummary();
+      refreshView();
+    }
+
+    // Winter season in Toronto: October 1 – April 30.
+    // Months are 0-indexed: Oct (9), Nov (10), Dec (11), Jan (0), Feb (1), Mar (2), Apr (3).
+    function isWinterMonth(month) {
+      return month >= 9 || month <= 3;
+    }
+
+    function isIndoorCourt(item) {
+      const io = String(item.indoorOutdoor || '').toLowerCase();
+      return io.includes('indoor') || io.includes('both');
+    }
+
+    function isCourtOpenAt(item, dayIndex, minutes, isHoliday, isWinter) {
+      // In winter, outdoor courts are effectively closed — restrict to indoor (or "Both") venues.
+      if (isWinter && !isIndoorCourt(item)) return false;
+
       const accessKey = normalizeAccess(item.access, item.raw && (item.raw['Public/Private'] || item.raw['Public Access'] || item.raw));
-      // Plain public courts and school courts are assumed always accessible.
-      if (accessKey === 'public' || accessKey === 'school') return true;
+      // Plain public, school, and commercial (bookable) courts are treated as available.
+      if (accessKey === 'public' || accessKey === 'school' || accessKey === 'commercial') return true;
       if (accessKey === 'public_club') {
         const key = isHoliday ? 'Public Hours Holidays' : DAY_INDEX_TO_CSV_KEY[dayIndex];
         const hoursStr = item.raw && item.raw[key];
         return minutesInRanges(minutes, parseTimeRanges(hoursStr));
       }
-      // Private and commercial are excluded from the planning filter.
+      // Private courts (and anything else) are excluded from the planning filter.
       return false;
     }
 
@@ -1417,19 +1668,31 @@
         lights: params.get('lights') || '',
         indoor: params.get('indoor') || '',
         access: params.get('access') || '',
+        plan: params.has('plan'),
+        planDate: params.get('planDate') || '',
+        planTime: params.get('planTime') || '',
+        planHoliday: params.has('planHoliday'),
       };
     }
 
     function setUrlState(state) {
       urlState = { ...state };
-      const params = new URLSearchParams();
-      if (state.court) params.set('court', state.court);
-      if (state.search) params.set('search', state.search);
-      if (state.surface) params.set('surface', state.surface);
-      if (state.lights) params.set('lights', state.lights);
-      if (state.indoor) params.set('indoor', state.indoor);
-      if (state.access) params.set('access', state.access);
-      const nextUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+      const parts = [];
+      const enc = (k, v) => parts.push(`${k}=${encodeURIComponent(v)}`);
+      if (state.court) enc('court', state.court);
+      if (state.search) enc('search', state.search);
+      if (state.surface) enc('surface', state.surface);
+      if (state.lights) enc('lights', state.lights);
+      if (state.indoor) enc('indoor', state.indoor);
+      if (state.access) enc('access', state.access);
+      if (state.plan) {
+        parts.push('plan');
+        if (state.planDate) enc('planDate', state.planDate);
+        if (state.planTime) enc('planTime', state.planTime);
+        if (state.planHoliday) parts.push('planHoliday');
+      }
+      const qs = parts.join('&');
+      const nextUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}`;
       window.history.replaceState({}, '', nextUrl);
     }
 
@@ -1439,9 +1702,13 @@
       controls.lights.value = state.lights;
       controls.indoor.value = state.indoor;
       controls.access.value = state.access;
+      if (state.planDate && controls.planDate) controls.planDate.value = state.planDate;
+      if (state.planTime && controls.planTime) controls.planTime.value = state.planTime;
+      if (controls.planHoliday) controls.planHoliday.checked = !!state.planHoliday;
     }
 
     function currentUrlState(item = currentSelection) {
+      const planOpen = isPlanOpen();
       return {
         court: item ? item.name : '',
         search: controls.search.value.trim(),
@@ -1449,6 +1716,10 @@
         lights: controls.lights.value,
         indoor: controls.indoor.value,
         access: controls.access.value,
+        plan: planOpen,
+        planDate: planOpen && controls.planDate ? controls.planDate.value : '',
+        planTime: planOpen && controls.planTime ? controls.planTime.value : '',
+        planHoliday: planOpen && controls.planHoliday ? controls.planHoliday.checked : false,
       };
     }
 
@@ -1509,7 +1780,8 @@
       mapTypeMap: null,
       mapTypeSatellite: null,
       planCard: null,
-      planEnabled: null,
+      planLaunch: null,
+      planClose: null,
       planDate: null,
       planTime: null,
       planHoliday: null,
@@ -1822,17 +2094,21 @@
       });
     }
 
+    function isPlanOpen() {
+      return !!(controls.planCard && !controls.planCard.hidden);
+    }
+
     function getPlanState() {
-      const enabled = !!(controls.planEnabled && controls.planEnabled.checked);
+      const enabled = isPlanOpen();
       const dateStr = controls.planDate ? controls.planDate.value : '';
       const timeStr = controls.planTime ? controls.planTime.value : '';
       const holiday = !!(controls.planHoliday && controls.planHoliday.checked);
       if (!enabled || !dateStr || !timeStr) {
-        return { enabled, dateStr, timeStr, holiday, dayIndex: -1, minutes: -1 };
+        return { enabled, dateStr, timeStr, holiday, dayIndex: -1, minutes: -1, isWinter: false };
       }
       const d = new Date(`${dateStr}T${timeStr}`);
       if (Number.isNaN(d.getTime())) {
-        return { enabled, dateStr, timeStr, holiday, dayIndex: -1, minutes: -1 };
+        return { enabled, dateStr, timeStr, holiday, dayIndex: -1, minutes: -1, isWinter: false };
       }
       return {
         enabled,
@@ -1841,6 +2117,7 @@
         holiday,
         dayIndex: d.getDay(),
         minutes: d.getHours() * 60 + d.getMinutes(),
+        isWinter: isWinterMonth(d.getMonth()),
       };
     }
 
@@ -1860,7 +2137,7 @@
         const matchesIndoor = !indoor || item.indoorOutdoor === indoor;
         const matchesAccess = !access || item.access === access;
         if (!(matchesQuery && matchesSurface && matchesLights && matchesIndoor && matchesAccess)) return false;
-        if (planActive && !isCourtOpenAt(item, plan.dayIndex, plan.minutes, plan.holiday)) return false;
+        if (planActive && !isCourtOpenAt(item, plan.dayIndex, plan.minutes, plan.holiday, plan.isWinter)) return false;
         return true;
       });
     }
@@ -1938,16 +2215,14 @@
         controls.detailStreetView = document.getElementById('detail-street-view');
         controls.detailClose = document.getElementById('detail-close');
         controls.sidebar = document.querySelector('.sidebar');
-        controls.planCard = document.querySelector('.plan-card');
-        controls.planEnabled = document.getElementById('plan-enabled');
+        controls.planCard = document.getElementById('plan-card');
+        controls.planLaunch = document.getElementById('plan-launch');
+        controls.planClose = document.getElementById('plan-close');
         controls.planDate = document.getElementById('plan-date');
         controls.planTime = document.getElementById('plan-time');
         controls.planHoliday = document.getElementById('plan-holiday');
         controls.planSummary = document.getElementById('plan-summary');
         controls.planNow = document.getElementById('plan-now');
-
-        setPlanInputsToNow();
-        updatePlanSummary();
 
         data = await loadData();
         const uniqueValues = (field) => [...new Set(data.map((item) => item[field]).filter(Boolean))].sort((left, right) => left.localeCompare(right));
@@ -1960,6 +2235,9 @@
         renderLegend();
 
         applyUrlStateToControls(urlState);
+        if (urlState.plan) controls.planCard.hidden = false;
+        setPlanInputsToNow();
+        updatePlanSummary();
 
         currentItems = data;
         refreshView();
@@ -1977,14 +2255,19 @@
           updatePlanSummary();
           refreshView();
         };
-        controls.planEnabled.addEventListener('change', onPlanChange);
         controls.planDate.addEventListener('change', onPlanChange);
         controls.planTime.addEventListener('change', onPlanChange);
         controls.planHoliday.addEventListener('change', onPlanChange);
         controls.planNow.addEventListener('click', () => {
+          if (controls.planDate) controls.planDate.value = '';
+          if (controls.planTime) controls.planTime.value = '';
           setPlanInputsToNow();
           onPlanChange();
         });
+        controls.planLaunch.addEventListener('click', () => {
+          isPlanOpen() ? closePlan() : openPlan();
+        });
+        controls.planClose.addEventListener('click', closePlan);
 
         document.getElementById('reset-filters').addEventListener('click', () => {
           controls.search.value = '';
@@ -1992,11 +2275,7 @@
           controls.lights.value = '';
           controls.indoor.value = '';
           controls.access.value = '';
-          controls.planEnabled.checked = false;
-          controls.planHoliday.checked = false;
-          setPlanInputsToNow();
-          updatePlanSummary();
-          refreshView();
+          closePlan();
         });
 
         document.getElementById('clear-search').addEventListener('click', () => {

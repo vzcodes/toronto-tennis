@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Winter Tennis — Toronto Tennis Society</title>
+  <meta name="description" content="Where to play indoor tennis in Toronto during the long October-to-April winter season — commercial bubbles, year-round clubs, and tips." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <style>
+    .winter-hero {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+    .winter-hero .hero-art {
+      aspect-ratio: 4 / 3;
+      border-radius: 24px;
+      background:
+        radial-gradient(60% 70% at 28% 20%, rgba(255,255,255,0.55), transparent 70%),
+        linear-gradient(160deg, #1a3d6b 0%, #2a5a9a 60%, #6ec0ff 110%);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(20, 40, 70, 0.22);
+    }
+    .winter-hero .hero-art::before {
+      content: "";
+      position: absolute;
+      inset: 18% 14%;
+      border: 2px solid rgba(255,255,255,0.75);
+      border-radius: 6px;
+    }
+    .winter-hero .hero-art::after {
+      content: "";
+      position: absolute;
+      left: 14%;
+      right: 14%;
+      top: 50%;
+      border-top: 2px solid rgba(255,255,255,0.75);
+    }
+    .winter-hero .snowflakes {
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 30%, white 1px, transparent 2px),
+        radial-gradient(circle at 70% 20%, white 1.5px, transparent 2.5px),
+        radial-gradient(circle at 80% 75%, white 1px, transparent 2px),
+        radial-gradient(circle at 35% 80%, white 1.5px, transparent 2.5px),
+        radial-gradient(circle at 55% 50%, white 1px, transparent 2px);
+      opacity: 0.85;
+    }
+
+    .venue-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .venue-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .venue-card.skeleton { color: var(--muted); }
+    .venue-card .venue-type {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .venue-card h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; margin: 0; }
+    .venue-card .venue-meta { font-size: 0.86rem; color: var(--muted); }
+    .venue-card .venue-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .venue-card a.venue-link { font-size: 0.92rem; font-weight: 700; margin-top: 6px; }
+
+    .winter-tips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .tip-card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 22px; }
+    .tip-card h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; }
+    .tip-card p { font-size: 0.96rem; margin: 0; }
+
+    @media (max-width: 760px) { .winter-hero { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-wrap">
+      <a class="site-brand" href="../">
+        <span class="brand-mark">TTS</span>
+        <span class="brand-name">Toronto Tennis Society</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="../">Home</a>
+        <a href="../access-types/">Access Types</a>
+        <a href="../surface-types/">Surface Types</a>
+        <a href="./" aria-current="page">Winter Tennis</a>
+        <a href="../statistics/">Statistics</a>
+        <a class="nav-cta" href="../map/">Open the Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="page-hero winter-hero">
+      <div>
+        <span class="eyebrow">October — April</span>
+        <h1>Tennis through the Toronto winter.</h1>
+        <p>From late October to early May, Toronto's hundreds of outdoor courts come down, get padlocked, or get covered in snow. The good news: a small but capable network of indoor "bubble" venues, permanent dome facilities, and year-round clubs keeps the city playing through the cold months.</p>
+        <div class="button-row">
+          <a class="button primary" href="../map/?plan">Open Plan-a-Hit on the map</a>
+          <a class="button" href="../access-types/">Read about commercial access</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="snowflakes"></div></div>
+    </section>
+
+    <section style="margin-top: 24px;">
+      <div class="section-title" style="margin-bottom: 12px;">
+        <h2>What "winter" means on the map</h2>
+        <p>When you set a date between October 1 and April 30 in the Plan-a-Hit panel, the map automatically restricts results to indoor or covered courts. Outdoor City parks aren't realistically playable in those months — even on the rare snow-free week — so we hide them to keep planning useful.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="margin-top: 36px;">Toronto's indoor venues</h2>
+      <p>These are the courts marked as <em>Indoor</em> or <em>Both</em> in our dataset and classified as <strong>Commercial</strong> (open to the paying public) or <strong>Public/School</strong> indoor. Members-only indoor clubs are listed on the <a href="../access-types/">access types page</a> but excluded here.</p>
+      <div class="venue-grid" id="venue-grid">
+        <div class="venue-card skeleton">Loading indoor venues…</div>
+      </div>
+    </section>
+
+    <section class="winter-tips">
+      <div class="tip-card">
+        <h3>Book early</h3>
+        <p>Peak winter slots (weekday 6–10 p.m., weekends) fill weeks ahead at most commercial venues. Reserve as soon as your schedule firms up — many clubs open booking 7–14 days in advance.</p>
+      </div>
+      <div class="tip-card">
+        <h3>Bubble vs. permanent</h3>
+        <p>Inflatable "bubbles" are seasonal — they typically go up in mid-October and come down in late April. The same court might be commercial-indoor in winter and free-public-outdoor in summer (Eglinton Flats is the classic example).</p>
+      </div>
+      <div class="tip-card">
+        <h3>Memberships pay off</h3>
+        <p>Most commercial venues offer winter memberships that include a fixed weekly slot, court-time discounts, or priority booking. If you play 1+ time per week, the math usually works out.</p>
+      </div>
+      <div class="tip-card">
+        <h3>Bring layers</h3>
+        <p>Bubbles are heated but not warm. Plan for a 14–18 °C playing temperature and expect to remove a layer mid-warmup. Indoor permanent facilities are usually closer to 20 °C.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-wrap">
+      <div class="footer-col">
+        <div class="footer-brand">Toronto Tennis Society</div>
+        <p>A community-maintained map and guide to playing tennis in Toronto.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="../map/">Court map</a>
+        <a href="../access-types/">Access types</a>
+        <a href="../surface-types/">Surface types</a>
+        <a href="../winter-tennis/">Winter tennis</a>
+        <a href="../statistics/">Statistics</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/vzcodes/toronto-tennis" target="_blank" rel="noreferrer">GitHub repository</a>
+        <a href="https://github.com/vzcodes/toronto-tennis/issues" target="_blank" rel="noreferrer">Report a court / issue</a>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      Information on this site may not be accurate or up to date. Verify hours, fees, and access with official City of Toronto or club websites before heading out.
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script>
+    function escapeHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const grid = document.getElementById('venue-grid');
+      try {
+        const rows = await window.TTS.fetchRows();
+        const venues = rows.filter((r) => {
+          const io = (r['Indoor/Outdoor'] || '').toLowerCase();
+          if (!(io === 'indoor' || io === 'both')) return false;
+          const bucket = window.TTS.bucketAccess(r['Public/Private']);
+          return bucket === 'commercial' || bucket === 'public' || bucket === 'school' || bucket === 'public_club';
+        });
+        venues.sort((a, b) => (a['Name'] || '').localeCompare(b['Name'] || ''));
+        if (!venues.length) {
+          grid.innerHTML = '<div class="venue-card skeleton">No indoor venues found in the dataset.</div>';
+          return;
+        }
+        grid.innerHTML = venues.map((r) => {
+          const bucket = window.TTS.bucketAccess(r['Public/Private']);
+          const typeLabel = bucket === 'commercial' ? 'Commercial' : bucket === 'school' ? 'School' : bucket === 'public_club' ? 'Public (club)' : 'Public';
+          const indoorType = r['Indoor Court Type'] || '';
+          const website = (r['Club Website'] || '').trim();
+          const courts = r['Number of Courts'] || '';
+          const surface = r['Primary Surface'] || '';
+          const winter = r['Winter Play'] || '';
+          const tags = [];
+          if (indoorType) tags.push(indoorType);
+          if (winter && winter.toLowerCase() === 'yes') tags.push('Winter play');
+          if (courts) tags.push(`${courts} court${courts === '1' ? '' : 's'}`);
+          const link = `../map/?court=${encodeURIComponent(r['Name'] || '')}`;
+          const sitehtml = website ? ` · <a href="${escapeHtml(website)}" target="_blank" rel="noreferrer">website</a>` : '';
+          return `
+            <article class="venue-card">
+              <div class="venue-type">${escapeHtml(typeLabel)}</div>
+              <h3>${escapeHtml(r['Name'] || 'Unnamed')}</h3>
+              <div class="venue-meta">${escapeHtml(r['Address'] || r['City'] || '')}</div>
+              <div class="venue-meta">${escapeHtml(surface)}${indoorType ? ' · ' + escapeHtml(indoorType) : ''}</div>
+              <div class="venue-tags">${tags.map((t) => `<span class="tag neutral">${escapeHtml(t)}</span>`).join('')}</div>
+              <a class="venue-link" href="${link}">View on map →</a>${sitehtml}
+            </article>`;
+        }).join('');
+      } catch (err) {
+        grid.innerHTML = `<div class="venue-card skeleton">Failed to load venues: ${escapeHtml(err.message)}</div>`;
+      }
+    });
+  </script>
+</body>
+</html>
