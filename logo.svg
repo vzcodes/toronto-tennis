@@ -27,12 +27,12 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="0.70710678"
-     inkscape:cx="335.87572"
-     inkscape:cy="468.8118"
+     inkscape:cx="333.04729"
+     inkscape:cy="466.69048"
      inkscape:window-width="1920"
-     inkscape:window-height="1080"
+     inkscape:window-height="881"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="30"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -54,9 +54,9 @@
        x="64.358505"
        y="90.925095"
        id="text2"
-       transform="matrix(2.4325453,0,0,2.4325453,-23.08741,-71.769938)"><tspan
+       transform="matrix(2.4325453,0,0,2.4325453,-22.441454,-71.769943)"><tspan
          x="64.358505"
          y="90.925095"
-         id="tspan1">TTS</tspan></text>
+         id="tspan2">TTCM</tspan></text>
   </g>
 </svg>
