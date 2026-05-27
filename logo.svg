@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1000"
+   height="1000"
+   viewBox="0 0 264.58332 264.58333"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="336.58283"
+     inkscape:cy="468.8118"
+     inkscape:window-width="1920"
+     inkscape:window-height="1080"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <ellipse
+       style="fill:#ccff00;stroke-width:0.264583;fill-opacity:1"
+       id="path1"
+       cx="132.29167"
+       cy="132.29167"
+       rx="112.814"
+       ry="115.247" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.6389px;font-family:'DIN Alternate';-inkscape-font-specification:'DIN Alternate, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0.0439521px;word-spacing:0.00351617px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:204.195;display:inline;fill:#000000;fill-opacity:1;stroke-width:0.264583"
+       x="64.358505"
+       y="90.925095"
+       id="text2"
+       transform="matrix(2.4325453,0,0,2.4325453,-24.337458,-131.64851)"><tspan
+         x="64.358505"
+         y="90.925095"
+         id="tspan3"><tspan
+           dx="0 0 0 0 0 0 0 -0.003515328"
+           id="tspan1">Toronto
+</tspan></tspan><tspan
+         x="64.358505"
+         y="112.97371"
+         id="tspan5"><tspan
+           dx="0 0 0 0 0 0 -0.003515328"
+           id="tspan4">Tennis
+</tspan></tspan><tspan
+         x="64.358505"
+         y="135.02234"
+         id="tspan6">Society</tspan></text>
+  </g>
+</svg>

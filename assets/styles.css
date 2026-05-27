@@ -83,18 +83,11 @@ ul, ol { line-height: 1.7; color: var(--muted); }
 }
 
 .brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: var(--accent);
-  color: white;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: 0.02em;
+  display: block;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .brand-name {

@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Winter Tennis — Toronto Tennis Society</title>
   <meta name="description" content="Where to play indoor tennis in Toronto during the long October-to-April winter season — commercial bubbles, year-round clubs, and tips." />
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="../logo.svg" />
+  <link rel="apple-touch-icon" href="../logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -16,41 +19,23 @@
       gap: 32px;
       align-items: center;
     }
-    .winter-hero .hero-art {
-      aspect-ratio: 4 / 3;
+    .winter-hero .hero-figure { margin: 0; }
+    .winter-hero .hero-photo {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
       border-radius: 24px;
-      background:
-        radial-gradient(60% 70% at 28% 20%, rgba(255,255,255,0.55), transparent 70%),
-        linear-gradient(160deg, #1a3d6b 0%, #2a5a9a 60%, #6ec0ff 110%);
-      position: relative;
-      overflow: hidden;
       box-shadow: 0 20px 50px rgba(20, 40, 70, 0.22);
     }
-    .winter-hero .hero-art::before {
-      content: "";
-      position: absolute;
-      inset: 18% 14%;
-      border: 2px solid rgba(255,255,255,0.75);
-      border-radius: 6px;
+    .winter-hero .hero-credit {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
     }
-    .winter-hero .hero-art::after {
-      content: "";
-      position: absolute;
-      left: 14%;
-      right: 14%;
-      top: 50%;
-      border-top: 2px solid rgba(255,255,255,0.75);
-    }
-    .winter-hero .snowflakes {
-      position: absolute; inset: 0;
-      background-image:
-        radial-gradient(circle at 20% 30%, white 1px, transparent 2px),
-        radial-gradient(circle at 70% 20%, white 1.5px, transparent 2.5px),
-        radial-gradient(circle at 80% 75%, white 1px, transparent 2px),
-        radial-gradient(circle at 35% 80%, white 1.5px, transparent 2.5px),
-        radial-gradient(circle at 55% 50%, white 1px, transparent 2px);
-      opacity: 0.85;
-    }
+    .winter-hero .hero-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 
     .venue-grid {
       display: grid;
@@ -96,7 +81,7 @@
   <header class="site-header">
     <div class="header-wrap">
       <a class="site-brand" href="../">
-        <span class="brand-mark">TTS</span>
+        <img class="brand-mark" src="../logo.svg" alt="" aria-hidden="true" width="38" height="38" />
         <span class="brand-name">Toronto Tennis Society</span>
       </a>
       <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
@@ -116,25 +101,38 @@
       <div>
         <span class="eyebrow">October — April</span>
         <h1>Tennis through the Toronto winter.</h1>
-        <p>From late October to early May, Toronto's hundreds of outdoor courts come down, get padlocked, or get covered in snow. The good news: a small but capable network of indoor "bubble" venues, permanent dome facilities, and year-round clubs keeps the city playing through the cold months.</p>
+        <p>From mid-October to mid-April, Toronto's hundreds of outdoor courts come down, get padlocked, or get covered in snow. The good news: a small but capable network of indoor "bubble" venues, permanent dome facilities, and year-round clubs keeps the city playing through the cold months.</p>
         <div class="button-row">
           <a class="button primary" href="../map/?plan">Open Plan-a-Hit on the map</a>
           <a class="button" href="../access-types/">Read about commercial access</a>
         </div>
       </div>
-      <div class="hero-art" aria-hidden="true"><div class="snowflakes"></div></div>
+      <figure class="hero-figure">
+        <img
+          class="hero-photo"
+          src="indoor-tennis.jpg"
+          alt="Interior of a Toronto indoor tennis bubble, with hard courts and a high inflatable fabric ceiling."
+          width="4032"
+          height="3024"
+          loading="eager"
+        />
+        <figcaption class="hero-credit">
+          Eglinton Flats Winter Tennis Club at Eglinton Flats Park. Photo by
+          <a href="https://github.com/vzcodes" target="_blank" rel="noreferrer">vzcodes</a> via GitHub.
+        </figcaption>
+      </figure>
     </section>
 
     <section style="margin-top: 24px;">
       <div class="section-title" style="margin-bottom: 12px;">
         <h2>What "winter" means on the map</h2>
-        <p>When you set a date between October 1 and April 30 in the Plan-a-Hit panel, the map automatically restricts results to indoor or covered courts. Outdoor City parks aren't realistically playable in those months — even on the rare snow-free week — so we hide them to keep planning useful.</p>
+        <p>When you set a date between October 1 and April 30 in the Plan-a-Hit panel, the map automatically restricts results to indoor or covered courts. Outdoor City parks aren't realistically playable in those months even on the rare snow-free week, so we hide them to keep planning useful.</p>
       </div>
     </section>
 
     <section>
       <h2 style="margin-top: 36px;">Toronto's indoor venues</h2>
-      <p>These are the courts marked as <em>Indoor</em> or <em>Both</em> in our dataset and classified as <strong>Commercial</strong> (open to the paying public) or <strong>Public/School</strong> indoor. Members-only indoor clubs are listed on the <a href="../access-types/">access types page</a> but excluded here.</p>
+      <p>These are the courts marked as <em>Indoor</em> or <em>Both</em> in our dataset and classified as <strong>Commercial</strong> (open to the paying public) or <strong>Public</strong> indoor. Members-only indoor clubs are listed on the <a href="../access-types/">access types page</a> but excluded here.</p>
       <div class="venue-grid" id="venue-grid">
         <div class="venue-card skeleton">Loading indoor venues…</div>
       </div>
@@ -143,15 +141,15 @@
     <section class="winter-tips">
       <div class="tip-card">
         <h3>Book early</h3>
-        <p>Peak winter slots (weekday 6–10 p.m., weekends) fill weeks ahead at most commercial venues. Reserve as soon as your schedule firms up — many clubs open booking 7–14 days in advance.</p>
+        <p>Peak winter slots (weekday 6–10 p.m., weekends) fill weeks ahead at most commercial venues. Reserve as soon as your schedule firms up as many clubs open booking 7–14 days in advance.</p>
       </div>
       <div class="tip-card">
         <h3>Bubble vs. permanent</h3>
-        <p>Inflatable "bubbles" are seasonal — they typically go up in mid-October and come down in late April. The same court might be commercial-indoor in winter and free-public-outdoor in summer (Eglinton Flats is the classic example).</p>
+        <p>Inflatable "bubbles" are seasonal, they typically go up in mid-October and come down in late April. The same court might be commercial-indoor in winter and free-public-outdoor in summer (Eglinton Flats is the classic example).</p>
       </div>
       <div class="tip-card">
         <h3>Memberships pay off</h3>
-        <p>Most commercial venues offer winter memberships that include a fixed weekly slot, court-time discounts, or priority booking. If you play 1+ time per week, the math usually works out.</p>
+        <p>Most commercial venues offer winter memberships that include weekly slots, leagues, court fee discounts, or priority booking. If you play 1+ time per week, the math usually works out.</p>
       </div>
       <div class="tip-card">
         <h3>Bring layers</h3>
@@ -164,7 +162,7 @@
     <div class="footer-wrap">
       <div class="footer-col">
         <div class="footer-brand">Toronto Tennis Society</div>
-        <p>A community-maintained map and guide to playing tennis in Toronto.</p>
+        <p>A map and guide to playing tennis in Toronto.</p>
       </div>
       <div class="footer-col">
         <h4>Explore</h4>

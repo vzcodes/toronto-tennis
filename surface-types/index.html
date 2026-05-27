@@ -5,11 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Surface Types — Toronto Tennis Society</title>
   <meta name="description" content="A guide to the court surfaces you'll find in Toronto: hardcourt-acrylic, hardcourt-asphalt, green clay, red clay, grass, and artificial grass." />
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="../logo.svg" />
+  <link rel="apple-touch-icon" href="../logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/styles.css" />
   <style>
+    .surface-hero {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+    .surface-hero .hero-figure { margin: 0; }
+    .surface-hero .hero-photo {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(37, 28, 13, 0.18);
+    }
+    .surface-hero .hero-credit {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .surface-hero .hero-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+    @media (max-width: 760px) { .surface-hero { grid-template-columns: 1fr; } }
+
     .surface-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -125,7 +153,7 @@
   <header class="site-header">
     <div class="header-wrap">
       <a class="site-brand" href="../">
-        <span class="brand-mark">TTS</span>
+        <img class="brand-mark" src="../logo.svg" alt="" aria-hidden="true" width="38" height="38" />
         <span class="brand-name">Toronto Tennis Society</span>
       </a>
       <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
@@ -141,10 +169,26 @@
   </header>
 
   <main class="wrap">
-    <section class="page-hero">
-      <span class="eyebrow">Reading the map</span>
-      <h1>Court surfaces in Toronto.</h1>
-      <p>Surface affects everything: pace, bounce, footing, even how hard your knees feel the next morning. Toronto's public courts are overwhelmingly hardcourt, but a handful of clubs offer the slower, gentler clay experience.</p>
+    <section class="page-hero surface-hero">
+      <div>
+        <span class="eyebrow">Reading the map</span>
+        <h1>Court surfaces in Toronto.</h1>
+        <p>Surface affects everything: pace, bounce, footing, even how hard your knees feel the next morning. Toronto's public courts are overwhelmingly hardcourt, but a handful of clubs offer the slower, gentler clay experience.</p>
+      </div>
+      <figure class="hero-figure">
+        <img
+          class="hero-photo"
+          src="UofT_Tennis_Centre.JPG"
+          alt="Two outdoor blue and green acrylic hardcourts at the University of Toronto Tennis Centre in Scarborough, with players on the far side and trees in the background."
+          width="6240"
+          height="4160"
+          loading="eager"
+        />
+        <figcaption class="hero-credit">
+          Acrylic hard court surface at the University of Toronto Tennis Centre in Scarborough. Photo by
+          <a href="https://github.com/vzcodes" target="_blank" rel="noreferrer">vzcodes</a> via GitHub.
+        </figcaption>
+      </figure>
     </section>
 
     <div class="surface-grid">
@@ -307,7 +351,7 @@
     <div class="footer-wrap">
       <div class="footer-col">
         <div class="footer-brand">Toronto Tennis Society</div>
-        <p>A community-maintained map and guide to playing tennis in Toronto.</p>
+        <p>A map and guide to playing tennis in Toronto.</p>
       </div>
       <div class="footer-col">
         <h4>Explore</h4>

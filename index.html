@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Toronto Tennis Society — Find a court across the city</title>
   <meta name="description" content="A community resource for finding tennis courts in Toronto. Browse all public, club, school, and commercial courts on an interactive map." />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="apple-touch-icon" href="logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -19,34 +22,23 @@
     }
     .hero h1 { max-width: 18ch; margin-bottom: 18px; }
     .hero p { font-size: 1.12rem; max-width: 50ch; }
-    .hero-art {
-      background:
-        radial-gradient(60% 80% at 30% 20%, rgba(255,255,255,0.6), transparent 70%),
-        linear-gradient(135deg, #0b6b53 0%, #0e8a6a 50%, #6ce4a1 110%);
+    .hero-figure { margin: 0; }
+    .hero-photo {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
       border-radius: 24px;
-      aspect-ratio: 4 / 3;
-      position: relative;
-      overflow: hidden;
       box-shadow: 0 24px 60px rgba(11, 107, 83, 0.22);
     }
-    .hero-art::before, .hero-art::after {
-      content: "";
-      position: absolute;
-      border: 2px solid rgba(255,255,255,0.7);
-      border-radius: 8px;
+    .hero-credit {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
     }
-    .hero-art::before { inset: 18% 14%; }
-    .hero-art::after { left: 14%; right: 14%; top: 50%; height: 0; border-top-width: 2px; border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; }
-    .hero-art .ball {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      right: 22%;
-      top: 38%;
-      background: radial-gradient(circle at 30% 30%, #f5ff7a, #c9d92e);
-      border-radius: 50%;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
-    }
+    .hero-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 
     .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin: 28px 0 56px; }
     .feature-card { background: var(--panel); border: 1px solid var(--border); border-radius: 22px; padding: 22px; }
@@ -75,14 +67,14 @@
 
     .stats-meta p { margin: 0; color: var(--muted); font-size: 0.92rem; }
 
-    @media (max-width: 880px) { .hero { grid-template-columns: 1fr; } .hero-art { aspect-ratio: 5 / 3; } }
+    @media (max-width: 880px) { .hero { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <header class="site-header">
     <div class="header-wrap">
       <a class="site-brand" href="./">
-        <span class="brand-mark">TTS</span>
+        <img class="brand-mark" src="logo.svg" alt="" aria-hidden="true" width="38" height="38" />
         <span class="brand-name">Toronto Tennis Society</span>
       </a>
       <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
@@ -108,7 +100,23 @@
           <!-- <a class="button" href="access-types/">Learn about access types</a> -->
         </div>
       </div>
-      <div class="hero-art" aria-hidden="true"><div class="ball"></div></div>
+      <figure class="hero-figure">
+        <img
+          class="hero-photo"
+          src="1920px-Rexall_Centre_York_University_Toronto.jpeg"
+          alt="Aerial view of the Rexall Centre (now Sobeys Stadium) at York University in Toronto, with the main tennis stadium and surrounding outer courts."
+          width="1920"
+          height="1440"
+          loading="eager"
+        />
+        <figcaption class="hero-credit">
+          Sobeys Stadium (formerly Rexall Centre) at York University, Toronto. Photo by
+          <a href="https://commons.wikimedia.org/wiki/User:Laslovarga" target="_blank" rel="noreferrer">Laslovarga</a>,
+          via <a href="https://commons.wikimedia.org/wiki/File:Rexall_Centre_York_University_Toronto.JPG" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+          licensed under <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.
+          Resized from original.
+        </figcaption>
+      </figure>
     </section>
 
     <section>

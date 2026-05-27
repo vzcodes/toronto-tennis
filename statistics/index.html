@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Statistics — Toronto Tennis Society</title>
   <meta name="description" content="Counts and breakdowns of Toronto's tennis courts: by access type, surface, neighbourhood, and indoor capacity." />
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="../logo.svg" />
+  <link rel="apple-touch-icon" href="../logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -22,7 +25,7 @@
   <header class="site-header">
     <div class="header-wrap">
       <a class="site-brand" href="../">
-        <span class="brand-mark">TTS</span>
+        <img class="brand-mark" src="../logo.svg" alt="" aria-hidden="true" width="38" height="38" />
         <span class="brand-name">Toronto Tennis Society</span>
       </a>
       <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
@@ -41,7 +44,7 @@
     <section class="page-hero">
       <span class="eyebrow">By the numbers</span>
       <h1>Toronto tennis, in figures.</h1>
-      <p>All numbers below are computed live from the same CSV that powers the map. They include every location we've catalogued — from neighbourhood asphalt courts to elite private clubs — so you can size up the supply at a glance.</p>
+      <p>All numbers below are computed from every location we've catalogued, from neighbourhood asphalt courts to elite private clubs, so you can size up the data at a glace. Feel free to download the dataset <a href="https://github.com/vzcodes/toronto-tennis/blob/main/map/courts.csv">here</a>.</p>
     </section>
 
     <div class="stat-grid" id="overview-tiles">
@@ -67,8 +70,8 @@
       </section>
 
       <section class="card">
-        <h2>Indoor capacity</h2>
-        <p class="lead">Indoor or indoor-convertible courts vs. outdoor-only. The first column matters most in winter.</p>
+        <h2>Indoor vs. outdoor mix</h2>
+        <p class="lead">Of every court in the dataset, how many can be played indoors year-round, seasonally (bubble), or are outdoor-only. Indoor capacity = year-round + seasonal bubble.</p>
         <ul class="bar-list" id="indoor-bars">
           <li class="skeleton">Loading…</li>
         </ul>
@@ -76,7 +79,7 @@
 
       <section class="card">
         <h2>Top neighbourhoods</h2>
-        <p class="lead">Where the City has invested the most court capacity. Counts include every access type.</p>
+        <p class="lead">Where in the City with the most court capacity. Keep in mind courts listed below include every access type.</p>
         <ul class="bar-list" id="neighbourhood-bars">
           <li class="skeleton">Loading…</li>
         </ul>

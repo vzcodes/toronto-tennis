@@ -5,11 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Access Types — Toronto Tennis Society</title>
   <meta name="description" content="What 'public', 'public (club)', 'school', 'commercial', and 'private' mean in the Toronto Tennis Society directory." />
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="../logo.svg" />
+  <link rel="apple-touch-icon" href="../logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/styles.css" />
   <style>
+    .access-hero {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+    .access-hero .hero-figure { margin: 0; }
+    .access-hero .hero-photo {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(37, 28, 13, 0.18);
+    }
+    .access-hero .hero-credit {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .access-hero .hero-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+    @media (max-width: 760px) { .access-hero { grid-template-columns: 1fr; } }
+
     .access-card {
       display: grid;
       grid-template-columns: 8px 1fr;
@@ -52,7 +80,7 @@
   <header class="site-header">
     <div class="header-wrap">
       <a class="site-brand" href="../">
-        <span class="brand-mark">TTS</span>
+        <img class="brand-mark" src="../logo.svg" alt="" aria-hidden="true" width="38" height="38" />
         <span class="brand-name">Toronto Tennis Society</span>
       </a>
       <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button>
@@ -68,10 +96,26 @@
   </header>
 
   <main class="wrap">
-    <section class="page-hero">
-      <span class="eyebrow">Reading the map</span>
-      <h1>Access types, explained.</h1>
-      <p>Toronto's tennis courts come in five flavours of public access. Knowing the difference is the difference between showing up to an open court, finding a locked gate, and paying for court time. Here's what each category means in our directory, and what to expect when you show up to play.</p>
+    <section class="page-hero access-hero">
+      <div>
+        <span class="eyebrow">Reading the map</span>
+        <h1>Access types, explained.</h1>
+        <p>Toronto's tennis courts come in five flavours of public access. Knowing the difference is the difference between showing up to an open court, finding a locked gate, and paying for court time. Here's what each category means in our directory, and what to expect when you show up to play.</p>
+      </div>
+      <figure class="hero-figure">
+        <img
+          class="hero-photo"
+          src="cedarvale-park.jpg"
+          alt="Public outdoor tennis courts at Cedarvale Park in Toronto, with surrounding green space and trees."
+          width="4032"
+          height="3024"
+          loading="eager"
+        />
+        <figcaption class="hero-credit">
+          Public tennis courts at Cedarvale Park in Toronto. Photo by
+          <a href="https://github.com/vzcodes" target="_blank" rel="noreferrer">vzcodes</a> via GitHub.
+        </figcaption>
+      </figure>
     </section>
 
     <div class="card-grid" style="grid-template-columns: 1fr;">
@@ -174,7 +218,7 @@
     <div class="footer-wrap">
       <div class="footer-col">
         <div class="footer-brand">Toronto Tennis Society</div>
-        <p>A community-maintained map and guide to playing tennis in Toronto.</p>
+        <p>A map and guide to playing tennis in Toronto.</p>
       </div>
       <div class="footer-col">
         <h4>Explore</h4>
