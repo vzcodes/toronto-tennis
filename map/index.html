@@ -1598,6 +1598,13 @@
       return owner.includes('city of toronto');
     }
 
+    const TORONTO_RESERVATION_URL = 'https://anc.ca.apm.activecommunities.com/toronto/reservation/landing';
+
+    function isPublicReservable(item) {
+      const access = String((item && item.access) || '').trim().toLowerCase();
+      return access === 'public reservable';
+    }
+
     function renderLegend() {
       const container = document.getElementById('legend');
       if (!container) return;
@@ -1670,6 +1677,7 @@
             <a href="${googleMapsLink(item)}" target="_blank" rel="noreferrer">Open in Google Maps</a>
             <a href="${streetViewLink(item)}" target="_blank" rel="noreferrer">Street View</a>
             ${website ? `<a href="${website}" target="_blank" rel="noreferrer">Website</a>` : ''}
+            ${isPublicReservable(item) ? `<a href="${TORONTO_RESERVATION_URL}" target="_blank" rel="noreferrer">Reserve a court</a>` : ''}
           </div>
           <div class="popup-details">${detailsHtml}</div>
         </div>`;
@@ -1915,6 +1923,7 @@
       linksHtml += `<a class="detail-link" href="${streetViewLink(item)}" target="_blank" rel="noreferrer">Street View</a>`;
       if (clubWebsite) linksHtml += `<a class="detail-link" href="${escapeHtml(clubWebsite)}" target="_blank" rel="noreferrer">Club Website</a>`;
       if (cityUrl) linksHtml += `<a class="detail-link" href="${escapeHtml(cityUrl)}" target="_blank" rel="noreferrer">City of Toronto</a>`;
+      if (isPublicReservable(item)) linksHtml += `<a class="detail-link" href="${TORONTO_RESERVATION_URL}" target="_blank" rel="noreferrer">Reserve a court</a>`;
       linksContainer.innerHTML = linksHtml;
 
       controls.detailGrid.innerHTML = detailFields(item)
