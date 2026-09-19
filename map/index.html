@@ -813,6 +813,41 @@
       100% { transform: translateY(0) scale(1); opacity: 1; }
     }
 
+    .user-location-badge {
+      background: transparent !important;
+      border: 0 !important;
+      pointer-events: none;
+    }
+
+    .user-location-dot {
+      position: relative;
+      display: block;
+      width: 14px;
+      height: 14px;
+      margin: 4px;
+      border-radius: 50%;
+      background: #2f6fed;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(15, 40, 90, 0.45);
+    }
+
+    .user-location-pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 14px;
+      height: 14px;
+      margin: -7px 0 0 -7px;
+      border-radius: 50%;
+      background: rgba(47, 111, 237, 0.5);
+      animation: user-location-pulse 1.9s ease-out infinite;
+    }
+
+    @keyframes user-location-pulse {
+      0%   { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(2.8); opacity: 0; }
+    }
+
     .map-controls {
       position: absolute;
       top: 16px;
@@ -838,8 +873,26 @@
       background: var(--panel-strong);
       color: var(--text);
       box-shadow: var(--shadow-card);
+      font-family: inherit;
       font-weight: 700;
       font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .locate-button[aria-pressed="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .locate-button[aria-pressed="true"]:hover {
+      color: white;
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+    }
+    .locate-button:disabled {
+      opacity: 0.65;
+      cursor: default;
+      transform: none !important;
     }
 
     .type-group {
@@ -1072,6 +1125,7 @@
       .type-group { width: 100%; justify-content: space-between; }
       .type-button { flex: 1; padding: 10px 8px; }
       .street-view-launch { padding: 10px 14px; }
+      .locate-button { width: 100%; justify-content: center; }
       .detail-header { flex-wrap: wrap; }
       .detail-link { flex: 1 1 auto; }
       .info-popover { right: -8px; }
@@ -1171,6 +1225,17 @@
                 Access
                 <select id="access-filter"></select>
               </label>
+              <label>
+                Distance from me
+                <select id="radius-filter">
+                  <option value="">Any distance</option>
+                  <option value="1">Within 1 km</option>
+                  <option value="2">Within 2 km</option>
+                  <option value="5">Within 5 km</option>
+                  <option value="10">Within 10 km</option>
+                  <option value="20">Within 20 km</option>
+                </select>
+              </label>
             </div>
             <div class="filter-actions">
               <button class="ghost-button" id="reset-filters" type="button">Reset All Filters</button>
@@ -1235,6 +1300,10 @@
 
       <div class="map-pane" id="map-pane">
         <div class="map-controls">
+          <button class="street-view-launch locate-button" id="locate-btn" type="button" aria-pressed="false">
+            <span aria-hidden="true">📍</span>
+            <span id="locate-label">My Location</span>
+          </button>
           <div class="type-group" aria-label="Map type selector">
             <button class="type-button active" id="map-type-map" type="button">Map</button>
             <button class="type-button" id="map-type-satellite" type="button">Satellite</button>
@@ -1632,7 +1701,9 @@
     }
 
     function buildPopupContent(item) {
+      const distanceKm = getDistanceKm(item);
       const details = [
+        ['Distance from you', distanceKm == null ? '' : formatDistance(distanceKm)],
         ['Address', item.address],
         ['City', item.city],
         ['Region', item.raw['Region']],
@@ -1775,6 +1846,9 @@
     let activeLayer = 'satellite';
     let urlState = parseUrlState();
     let sidebarMode = urlState.court ? 'detail' : 'list';
+    let userLocation = null;
+    let userLocationMarker = null;
+    let userAccuracyCircle = null;
 
     const controls = {
       search: null,
@@ -1811,7 +1885,116 @@
       planHoliday: null,
       planSummary: null,
       planNow: null,
+      radius: null,
+      locateBtn: null,
+      locateLabel: null,
+      listHelp: null,
     };
+
+    function haversineDistanceKm(lat1, lng1, lat2, lng2) {
+      const toRad = (deg) => (deg * Math.PI) / 180;
+      const earthRadiusKm = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+      return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function getDistanceKm(item) {
+      if (!userLocation || item.lat == null || item.lng == null) return null;
+      return haversineDistanceKm(userLocation.lat, userLocation.lng, item.lat, item.lng);
+    }
+
+    function formatDistance(km) {
+      if (km < 1) return `${Math.round(km * 1000)} m`;
+      return `${km < 10 ? km.toFixed(1) : Math.round(km)} km`;
+    }
+
+    function setLocateState(state) {
+      if (!controls.locateBtn) return;
+      controls.locateBtn.disabled = state === 'locating';
+      controls.locateBtn.setAttribute('aria-pressed', state === 'active' ? 'true' : 'false');
+      if (controls.locateLabel) {
+        controls.locateLabel.textContent =
+          state === 'locating' ? 'Locating…' : state === 'active' ? 'Near Me' : 'My Location';
+      }
+    }
+
+    function renderUserLocation() {
+      if (!map) return;
+      if (userLocationMarker) { userLocationMarker.remove(); userLocationMarker = null; }
+      if (userAccuracyCircle) { userAccuracyCircle.remove(); userAccuracyCircle = null; }
+      if (!userLocation) return;
+
+      if (userLocation.accuracy > 0) {
+        userAccuracyCircle = L.circle([userLocation.lat, userLocation.lng], {
+          radius: userLocation.accuracy,
+          color: '#2f6fed',
+          weight: 1,
+          fillColor: '#2f6fed',
+          fillOpacity: 0.08,
+          interactive: false,
+        }).addTo(map);
+      }
+
+      userLocationMarker = L.marker([userLocation.lat, userLocation.lng], {
+        icon: L.divIcon({
+          className: 'user-location-badge',
+          html: '<span class="user-location-dot"><span class="user-location-pulse"></span></span>',
+          iconSize: [22, 22],
+          iconAnchor: [11, 11],
+        }),
+        interactive: false,
+        keyboard: false,
+        zIndexOffset: 2000,
+      }).addTo(map);
+    }
+
+    function clearUserLocation() {
+      userLocation = null;
+      renderUserLocation();
+      if (controls.radius) controls.radius.value = '';
+      setLocateState('idle');
+      refreshView();
+    }
+
+    function locateUser() {
+      if (!navigator.geolocation) {
+        controls.selectionNote.textContent = 'This browser does not support location sharing.';
+        return;
+      }
+      setLocateState('locating');
+      controls.selectionNote.textContent = 'Finding your location…';
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+          };
+          renderUserLocation();
+          setLocateState('active');
+          refreshView();
+          map.stop();
+          map.setView([userLocation.lat, userLocation.lng], Math.max(map.getZoom(), 14), { animate: true });
+        },
+        (error) => {
+          setLocateState('idle');
+          if (controls.radius) controls.radius.value = '';
+          let message = 'Could not determine your location.';
+          if (error.code === error.PERMISSION_DENIED) {
+            message = 'Location access denied. Allow it in your browser to find courts near you.';
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            message = 'Your location is unavailable right now.';
+          } else if (error.code === error.TIMEOUT) {
+            message = 'Locating you took too long. Please try again.';
+          }
+          controls.selectionNote.textContent = message;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    }
 
     function initMap() {
       map = L.map('map', {
@@ -1876,7 +2059,10 @@
       const clubName = String(item.raw['Tennis Club Name'] || '').trim();
       const clubWebsite = normalizeUrl(item.raw['Club Website']);
 
+      const distanceKm = getDistanceKm(item);
+
       const rows = [
+        ['Distance from you', distanceKm == null ? '' : formatDistance(distanceKm)],
         [item.secondarySurface ? 'Primary surface' : 'Court type', item.surface],
         ['Secondary surface', item.secondarySurface],
         ['Indoor / Outdoor', item.indoorOutdoor],
@@ -2021,6 +2207,7 @@
 
         points.push([item.lat, item.lng]);
       });
+      if (userLocation) points.push([userLocation.lat, userLocation.lng]);
       if (fitToBounds && points.length) {
         map.fitBounds(points, { padding: [30, 30] });
       }
@@ -2029,9 +2216,15 @@
     function updateSelectionUI(item) {
       const hasSelection = Boolean(item);
       controls.streetView.href = hasSelection ? streetViewLink(item) : streetViewLink();
-      controls.selectionNote.textContent = hasSelection
-        ? `${item.name} - ${item.address || 'Selected court'}`
-        : 'Choose a court to open Google Maps and Street View.';
+      if (hasSelection) {
+        const distanceKm = getDistanceKm(item);
+        const distanceText = distanceKm == null ? '' : ` · ${formatDistance(distanceKm)} away`;
+        controls.selectionNote.textContent = `${item.name} - ${item.address || 'Selected court'}${distanceText}`;
+      } else if (userLocation) {
+        controls.selectionNote.textContent = 'Your location is pinned — courts are sorted by distance.';
+      } else {
+        controls.selectionNote.textContent = 'Choose a court to open Google Maps and Street View.';
+      }
     }
 
     function setSelection(item, panToItem = false) {
@@ -2086,6 +2279,12 @@
 
         const chips = document.createElement('div');
         chips.className = 'chips';
+        const distanceKm = getDistanceKm(item);
+        if (distanceKm != null) {
+          const distanceChip = makeChip(`${formatDistance(distanceKm)} away`);
+          distanceChip.classList.add('accent');
+          chips.appendChild(distanceChip);
+        }
         if (item.surface) chips.appendChild(makeChip(item.surface));
         if (item.secondarySurface) chips.appendChild(makeChip(item.secondarySurface));
         if (item.courts) chips.appendChild(makeChip(`${item.courts} courts`));
@@ -2152,6 +2351,8 @@
       const lights = controls.lights.value;
       const indoor = controls.indoor.value;
       const access = controls.access.value;
+      const radiusKm = parseFloat(controls.radius.value);
+      const radiusActive = Number.isFinite(radiusKm) && Boolean(userLocation);
       const plan = getPlanState();
       const planActive = plan.enabled && plan.dayIndex >= 0;
 
@@ -2162,6 +2363,7 @@
         const matchesIndoor = !indoor || item.indoorOutdoor === indoor;
         const matchesAccess = !access || item.access === access;
         if (!(matchesQuery && matchesSurface && matchesLights && matchesIndoor && matchesAccess)) return false;
+        if (radiusActive && getDistanceKm(item) > radiusKm) return false;
         if (planActive && !isCourtOpenAt(item, plan.dayIndex, plan.minutes, plan.holiday, plan.isWinter)) return false;
         return true;
       });
@@ -2191,6 +2393,17 @@
 
     function refreshSidebar() {
       currentViewportItems = getViewportItems(currentItems);
+      if (userLocation) {
+        currentViewportItems = [...currentViewportItems].sort((a, b) => getDistanceKm(a) - getDistanceKm(b));
+      }
+      if (controls.listTitle) {
+        controls.listTitle.textContent = userLocation ? 'Courts near you' : 'Locations in view';
+      }
+      if (controls.listHelp) {
+        controls.listHelp.textContent = userLocation
+          ? 'Sorted by distance from your pinned location. Pan or zoom the map to change what is listed.'
+          : 'Pan or zoom the map to filter this list to what is currently in view.';
+      }
       if (sidebarMode === 'detail' && currentSelection) {
         showDetailView(currentSelection);
       } else {
@@ -2219,6 +2432,10 @@
         controls.lights = document.getElementById('lights-filter');
         controls.indoor = document.getElementById('indoor-filter');
         controls.access = document.getElementById('access-filter');
+        controls.radius = document.getElementById('radius-filter');
+        controls.locateBtn = document.getElementById('locate-btn');
+        controls.locateLabel = document.getElementById('locate-label');
+        controls.listHelp = document.querySelector('#list-card .list-header p');
         controls.list = document.getElementById('list');
         controls.bannerCount = document.getElementById('banner-count');
         controls.statsCard = document.querySelector('.stats-card');
@@ -2272,6 +2489,18 @@
         controls.lights.addEventListener('change', refreshView);
         controls.indoor.addEventListener('change', refreshView);
         controls.access.addEventListener('change', refreshView);
+        controls.radius.addEventListener('change', () => {
+          if (controls.radius.value && !userLocation) {
+            locateUser();
+            return;
+          }
+          refreshView();
+        });
+
+        controls.locateBtn.addEventListener('click', () => {
+          if (userLocation) clearUserLocation();
+          else locateUser();
+        });
 
         controls.mapTypeMap.addEventListener('click', () => setMapType('road'));
         controls.mapTypeSatellite.addEventListener('click', () => setMapType('satellite'));
@@ -2300,6 +2529,7 @@
           controls.lights.value = '';
           controls.indoor.value = '';
           controls.access.value = '';
+          controls.radius.value = '';
           closePlan();
         });
 
